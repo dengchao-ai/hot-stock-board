@@ -1,6 +1,10 @@
 name: 更新热榜数据
 on:
+  schedule:
+    - cron: '*/30 * * * *'
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -10,9 +14,12 @@ jobs:
         with:
           python-version: '3.11'
       - run: python3 generate.py
-      - name: 部署
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./
-          publish_branch: gh-pages
+      - name: 生成并发布
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          mkdir -p dist
+          cp 热门前100.html dist/
+          git add -A
+          git commit -m "更新数据 $(date)" || exit 0
+          git push
