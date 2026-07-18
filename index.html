@@ -3,341 +3,175 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#1a1a2e">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>热门前100 · 实时行情</title>
 <style>
-:root{--safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px);--safe-l:env(safe-area-inset-left,0px);--safe-r:env(safe-area-inset-right,0px)}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Segoe UI',sans-serif;background:#f0f2f5;color:#1d1d1f;-webkit-text-size-adjust:100%;overflow-x:hidden}
-/* Header */
-.header{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:18px 16px;padding-top:calc(18px + var(--safe-t));text-align:center;position:sticky;top:0;z-index:20;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
-.header h1{font-size:19px;font-weight:600;letter-spacing:.3px}
-.header .sub{font-size:12px;opacity:.7;margin-top:3px;font-weight:400}
-/* Container */
+:root{--safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Segoe UI',sans-serif;background:#f0f2f5;color:#1d1d1f;overflow-x:hidden}
+.header{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:16px;padding-top:calc(16px + var(--safe-t));text-align:center;position:sticky;top:0;z-index:20}
+.header h1{font-size:22px;font-weight:700;letter-spacing:1px}
+.header .sub{font-size:13px;color:rgba(255,255,255,.6);margin-top:4px;display:flex;align-items:center;justify-content:center;gap:6px}
 .container{max-width:100%;margin:0 auto;padding:10px 10px calc(10px + var(--safe-b))}
-/* Stats */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
-.stat{background:#fff;border-radius:12px;padding:10px 4px;text-align:center;border:1px solid #e8e8ed}
-.stat .n{font-size:18px;font-weight:700;color:#1a1a2e;line-height:1.3}
-.stat .n.up{color:#d63031}
-.stat .n .dn{color:#00b894}
-.stat .l{font-size:10px;color:#999;margin-top:1px}
-/* Sector */
+.stat{background:#fff;border-radius:14px;padding:12px 4px;text-align:center;border:1px solid #eee;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+.stat .n{font-size:20px;font-weight:700;color:#1a1a2e}
+.stat .n.up{color:#e53935}
+.stat .n .dn{color:#27ae60}
+.stat .l{font-size:11px;color:#999;margin-top:2px;font-weight:500}
 .sector{background:#fff;border-radius:12px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.04);overflow:hidden}
-.sector-hd{padding:11px 14px;font-size:14px;font-weight:600;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;gap:8px;background:#fafbfc}
-.sector-hd .badge{background:#1a1a2e;color:#fff;font-size:11px;padding:1px 8px;border-radius:10px;font-weight:600}
-/* Stock grid - 3 cols */
-.stock-list{list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:6px;padding:8px}
-.stock-row{display:flex;flex-direction:column;padding:8px 6px;cursor:pointer;background:#fff;border-radius:8px;border:1px solid #e8e8ed;overflow:hidden}
+.sector-hd{padding:12px 14px;font-size:15px;font-weight:700;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;gap:8px;background:#fafbfc}
+.sector-hd .badge{background:#e53935;color:#fff;font-size:14px;padding:2px 10px;border-radius:12px;font-weight:700;min-width:26px;text-align:center}
+.stock-list{list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:10px}
+.stock-row{display:flex;flex-direction:column;padding:10px 8px;cursor:pointer;background:#fff;border-radius:8px;border:1px solid #e8e8ed}
 .stock-row:active{background:#f2f2f7}
-.stock-top{display:flex;align-items:center;width:100%;gap:3px}
-.stock-rank{font-size:11px;font-weight:700;color:#d63031;white-space:nowrap;flex-shrink:0}
-.stock-name{font-size:12px;font-weight:500;color:#1d1d1f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;line-height:1.3;padding:0 1px}
-.stock-chg{text-align:right;font-weight:600;font-size:11px;white-space:nowrap;flex-shrink:0;font-variant-numeric:tabular-nums}
-.stock-chg.r{color:#d63031}
-.stock-chg.g{color:#00b894}
-.stock-sub{font-size:9px;color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px;line-height:1.2}
-/* Footer */
+.stock-top{display:flex;align-items:center;justify-content:space-between;width:100%}
+.stock-rank{font-size:12px;font-weight:700;color:#e53935;flex-shrink:0;min-width:28px}
+.stock-name{font-size:13px;font-weight:600;color:#1d1d1f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:center;margin:0 4px}
+.stock-chg{text-align:right;font-weight:700;font-size:12px;flex-shrink:0;min-width:52px}
+.stock-chg.r{color:#e53935}
+.stock-chg.g{color:#27ae60}
+.stock-sub{font-size:9px;color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}
 .ft{color:#999;font-size:11px;text-align:center;padding:14px 16px;padding-bottom:calc(14px + var(--safe-b))}
-/* Detail Panel - Fixed bottom sheet on mobile */
-#detail{display:none;margin:0;background:#fff;border-left:3px solid #0984e3}
-#detail.show{display:block}
-#detail.dark{background:#1c1c1e}
-.dt-header{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:12px 16px;padding-top:8px}
-.dt-top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
-.dt-name{font-size:17px;font-weight:700}
-.dt-code{font-size:12px;opacity:.6;margin-left:2px}
-.dt-close{margin-left:auto;width:28px;height:28px;border-radius:14px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;flex-shrink:0;border:none;color:#fff}
-.dt-close:active{background:rgba(255,255,255,.3)}
-.dt-price-row{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
-.dt-price{font-size:28px;font-weight:700}
-.dt-chg-label{font-size:16px;font-weight:600}
-.dt-chg-label.r{color:#ff6b6b}
-.dt-chg-label.g{color:#00b894}
-.dt-meta{display:flex;gap:6px;flex-wrap:wrap}
-.dt-meta span{background:rgba(255,255,255,.1);padding:3px 10px;border-radius:6px;font-size:11px;opacity:.9}
-.dt-meta b{font-weight:600}
-/* Chart */
-.chart-box{padding:6px 8px 0}
-/* Responsive: tablets and desktop */
-@media(min-width:600px){
-.container{max-width:680px;padding:16px}
-.stats{grid-template-columns:repeat(5,1fr);gap:10px}
-}
-@media(min-width:900px){
-.container{max-width:900px}
-}
-/* iOS overscroll fix */
+@media(min-width:600px){.container{max-width:680px;padding:16px}.stats{grid-template-columns:repeat(5,1fr)}}
 body{overscroll-behavior-y:contain}
-/* Smooth animations */
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .sector{animation:fadeUp .4s ease both}
-.sector:nth-child(2){animation-delay:.05s}
-.sector:nth-child(3){animation-delay:.1s}
-.sector:nth-child(4){animation-delay:.15s}
-.sector:nth-child(5){animation-delay:.2s}
+.loading{text-align:center;padding:40px 20px;color:#999;font-size:14px}
 </style>
 </head>
 <body>
-<div class="header">
-<h1>热门前100</h1>
-<div class="sub" id="headerSub">同花顺热门前100 · <span id="liveTime"></span></div>
-</div>
-<div class="container" id="app"></div>
-
-<!-- Inline K-line Chart -->
-<!-- K-line Full Screen Overlay -->
-<div id="kline_overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:999;background:#1a1a2e;flex-direction:column;padding:env(safe-area-inset-top,10px) env(safe-area-inset-right,10px) env(safe-area-inset-bottom,10px) env(safe-area-inset-left,10px)">
-  <div style="display:flex;align-items:center;gap:10px;padding:8px 0;flex-shrink:0">
-    <span id="ko_name" style="font-size:17px;font-weight:700;color:#fff"></span>
-    <span id="ko_code" style="font-size:12px;color:rgba(255,255,255,.5)"></span>
-    <span id="ko_chg" style="font-size:15px;font-weight:600;margin-left:auto"></span>
-    <button id="kline_close" style="width:28px;height:28px;border-radius:14px;background:rgba(255,255,255,.15);color:#fff;border:none;font-size:16px;cursor:pointer;flex-shrink:0">✕</button>
-  </div>
-  <div style="flex:1;min-height:0;position:relative">
-    <canvas id="canvas_kline" style="display:block"></canvas>
-  </div>
-</div>
-
-<div class="ft">实时数据: 新浪财经 · 历史数据: 同花顺</div>
-
+<div class="header"><h1>热门前100</h1><div class="sub"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#4ade80"></span> 同花顺实时 · <span id="liveTime">--:--</span></div></div>
+<div class="container" id="app"><div class="loading">正在获取数据...</div></div>
+<div class="ft">热门前100 · 同花顺实时数据</div>
 <script>
-var DATA = {"s": [{"c": "002396", "n": "星网锐捷", "o": 1, "q": 29.95, "p": 5.05, "cs": ["其他"], "rc": [], "tg": "", "mcap": 227.79, "turn": 18.06, "vol": 69661.6, "kl": [["2025-11-07", 19.92, 19.78, 19.98, 19.6, 99031.0], ["2025-11-10", 19.82, 19.66, 19.98, 19.45, 111754.0], ["2025-11-11", 19.79, 19.42, 19.91, 19.4, 115980.0], ["2025-11-12", 19.34, 19.28, 19.55, 19.11, 91236.0], ["2025-11-13", 19.36, 19.64, 19.73, 19.16, 131888.0], ["2025-11-14", 19.45, 19.19, 19.58, 19.19, 86257.0], ["2025-11-17", 19.21, 19.15, 19.31, 18.98, 99078.0], ["2025-11-18", 19.03, 19.21, 19.49, 18.88, 127067.0], ["2025-11-19", 19.21, 19.25, 19.71, 19.16, 133109.0], ["2025-11-20", 19.45, 19.23, 19.65, 19.02, 125351.0], ["2025-11-21", 18.98, 18.54, 19.14, 18.51, 142690.0], ["2025-11-24", 18.7, 19.06, 19.31, 18.49, 153991.0], ["2025-11-25", 19.21, 20.22, 20.49, 19.13, 355573.0], ["2025-11-26", 20.05, 20.19, 20.42, 19.83, 238672.0], ["2025-11-27", 20.24, 20.22, 20.81, 20.18, 216109.0], ["2025-11-28", 20.22, 20.6, 20.64, 20.08, 155650.0], ["2025-12-01", 20.81, 20.74, 20.85, 20.42, 182074.0], ["2025-12-02", 20.66, 20.69, 20.79, 20.5, 117135.0], ["2025-12-03", 20.62, 20.49, 20.95, 20.36, 138109.0], ["2025-12-04", 20.35, 20.6, 20.69, 20.13, 114553.0], ["2025-12-05", 20.65, 20.98, 21.08, 20.38, 192922.0], ["2025-12-08", 21.06, 22.19, 22.43, 20.89, 380051.0], ["2025-12-09", 22.91, 23.2, 23.78, 22.76, 508941.0], ["2025-12-10", 23.2, 23.13, 23.37, 22.74, 262387.0], ["2025-12-11", 23.1, 22.21, 23.29, 22.21, 202264.0], ["2025-12-12", 22.19, 22.51, 22.76, 21.82, 226314.0], ["2025-12-15", 22.16, 21.59, 22.42, 21.41, 192436.0], ["2025-12-16", 21.55, 21.63, 21.79, 20.83, 200707.0], ["2025-12-17", 21.59, 22.16, 22.3, 21.34, 195660.0], ["2025-12-18", 21.87, 21.61, 22.03, 21.61, 122213.0], ["2025-12-19", 21.79, 21.47, 21.86, 21.4, 120840.0], ["2025-12-22", 21.69, 22.32, 22.47, 21.56, 198212.0], ["2025-12-23", 22.23, 22.35, 22.59, 22.0, 168221.0], ["2025-12-24", 22.35, 22.42, 22.78, 22.09, 173868.0], ["2025-12-25", 22.42, 22.25, 22.56, 21.95, 118627.0], ["2025-12-26", 22.14, 22.7, 22.94, 21.94, 169387.0], ["2025-12-29", 22.7, 23.44, 24.02, 22.6, 308792.0], ["2025-12-30", 23.27, 23.4, 24.06, 23.16, 178976.0], ["2025-12-31", 23.4, 23.14, 23.71, 23.03, 118047.0], ["2026-01-05", 23.22, 24.07, 24.1, 23.0, 311518.0], ["2026-01-06", 24.14, 22.83, 24.28, 22.68, 533402.0], ["2026-01-07", 22.73, 22.73, 23.13, 22.45, 304618.0], ["2026-01-08", 22.66, 23.29, 23.77, 22.53, 320831.0], ["2026-01-09", 23.11, 23.94, 24.0, 22.66, 303420.0], ["2026-01-12", 23.94, 24.22, 24.43, 23.63, 306510.0], ["2026-01-13", 24.3, 23.24, 24.3, 23.14, 246542.0], ["2026-01-14", 23.33, 24.24, 24.71, 23.32, 332731.0], ["2026-01-15", 24.15, 23.43, 24.15, 23.2, 207834.0], ["2026-01-16", 23.62, 23.37, 23.8, 22.97, 185283.0], ["2026-01-19", 23.49, 22.19, 23.72, 22.0, 465253.0], ["2026-01-20", 22.13, 21.35, 22.3, 21.16, 269638.0], ["2026-01-21", 21.19, 21.61, 21.83, 21.13, 201263.0], ["2026-01-22", 21.68, 21.52, 21.98, 21.39, 179525.0], ["2026-01-23", 21.54, 22.13, 22.16, 21.41, 316800.0], ["2026-01-26", 22.06, 22.91, 23.14, 21.98, 402540.0], ["2026-01-27", 22.65, 22.92, 23.13, 21.83, 264334.0], ["2026-01-28", 22.94, 22.54, 23.09, 22.45, 172160.0], ["2026-01-29", 22.49, 22.05, 22.65, 21.73, 241926.0], ["2026-01-30", 21.85, 21.91, 22.43, 21.49, 168683.0], ["2026-02-02", 21.79, 21.42, 22.27, 21.39, 168222.0], ["2026-02-03", 21.62, 21.93, 22.18, 21.33, 168100.0], ["2026-02-04", 21.76, 21.62, 21.86, 21.27, 156880.0], ["2026-02-05", 21.4, 20.77, 21.47, 20.65, 161772.0], ["2026-02-06", 20.62, 20.78, 21.19, 20.49, 104243.0], ["2026-02-09", 21.11, 21.72, 21.93, 21.1, 188137.0], ["2026-02-10", 21.78, 22.11, 22.53, 21.78, 140965.0], ["2026-02-11", 22.03, 22.02, 22.4, 21.96, 76113.0], ["2026-02-12", 22.05, 22.83, 22.99, 21.93, 185791.0], ["2026-02-13", 22.72, 22.59, 23.39, 22.59, 162804.0], ["2026-02-24", 22.83, 22.62, 23.03, 22.32, 137799.0], ["2026-02-25", 22.62, 22.33, 22.8, 22.23, 157350.0], ["2026-02-26", 22.48, 23.57, 23.8, 22.4, 285919.0], ["2026-02-27", 23.18, 23.76, 23.94, 22.73, 227589.0], ["2026-03-02", 23.39, 23.22, 24.01, 23.14, 203038.0], ["2026-03-03", 23.27, 21.79, 23.32, 21.72, 180848.0], ["2026-03-04", 21.45, 21.89, 22.34, 21.45, 130375.0], ["2026-03-05", 22.34, 22.72, 23.27, 22.03, 174025.0], ["2026-03-06", 22.53, 22.73, 22.95, 22.3, 118538.0], ["2026-03-09", 22.33, 22.27, 22.48, 20.72, 260651.0], ["2026-03-10", 22.51, 23.47, 23.57, 22.51, 245392.0], ["2026-03-11", 23.62, 24.51, 25.14, 23.46, 416862.0], ["2026-03-12", 24.48, 24.62, 25.3, 24.26, 306620.0], ["2026-03-13", 24.29, 23.33, 24.38, 23.29, 222133.0], ["2026-03-16", 23.28, 22.85, 23.33, 22.26, 208104.0], ["2026-03-17", 23.02, 21.27, 23.07, 21.22, 280020.0], ["2026-03-18", 21.39, 22.4, 22.5, 21.01, 270883.0], ["2026-03-19", 21.99, 21.78, 22.37, 21.63, 186328.0], ["2026-03-20", 22.14, 21.26, 22.5, 21.26, 223712.0], ["2026-03-23", 20.49, 19.7, 20.62, 19.52, 244022.0], ["2026-03-24", 20.08, 20.2, 20.25, 19.37, 197398.0], ["2026-03-25", 20.45, 21.07, 21.34, 20.45, 182942.0], ["2026-03-26", 20.96, 20.49, 21.12, 20.35, 109438.0], ["2026-03-27", 20.07, 20.61, 21.01, 19.93, 133110.0], ["2026-03-30", 19.84, 19.88, 20.05, 18.86, 315152.0], ["2026-03-31", 19.8, 19.43, 20.02, 19.29, 172021.0], ["2026-04-01", 19.84, 19.82, 20.1, 19.7, 180141.0], ["2026-04-02", 19.78, 19.58, 20.16, 19.39, 149727.0], ["2026-04-03", 19.74, 19.76, 20.03, 19.55, 124569.0], ["2026-04-07", 19.83, 20.03, 20.27, 19.62, 155896.0], ["2026-04-08", 20.53, 21.06, 21.11, 20.39, 183336.0], ["2026-04-09", 20.74, 21.32, 21.43, 20.67, 168788.0], ["2026-04-10", 21.53, 21.26, 21.78, 21.24, 176039.0], ["2026-04-13", 21.06, 21.71, 21.99, 20.99, 153411.0], ["2026-04-14", 21.79, 21.67, 21.89, 21.41, 160836.0], ["2026-04-15", 21.74, 21.47, 21.97, 21.41, 135710.0], ["2026-04-16", 21.48, 22.21, 22.3, 21.38, 172603.0], ["2026-04-17", 22.16, 22.45, 22.87, 22.1, 149992.0], ["2026-04-20", 22.45, 22.23, 22.66, 22.1, 227926.0], ["2026-04-21", 20.99, 20.53, 21.14, 20.15, 378960.0], ["2026-04-22", 20.53, 21.46, 21.88, 20.37, 281263.0], ["2026-04-23", 21.38, 20.62, 21.73, 20.54, 203631.0], ["2026-04-24", 20.6, 20.92, 21.34, 19.61, 358600.0], ["2026-04-27", 20.91, 20.82, 21.68, 20.3, 262091.0], ["2026-04-28", 20.65, 20.02, 20.82, 19.9, 189476.0], ["2026-04-29", 19.85, 20.27, 20.53, 19.85, 139614.0], ["2026-04-30", 20.3, 20.22, 20.47, 19.68, 174362.0], ["2026-05-06", 20.49, 20.53, 21.16, 20.45, 272857.0], ["2026-05-07", 20.64, 20.85, 21.02, 20.22, 178393.0], ["2026-05-08", 20.66, 22.08, 22.79, 20.41, 436634.0], ["2026-05-11", 22.75, 24.3, 24.3, 22.53, 649809.0], ["2026-05-12", 25.11, 24.53, 25.76, 23.92, 711625.0], ["2026-05-13", 24.33, 24.36, 24.76, 23.9, 429489.0], ["2026-05-14", 25.22, 23.87, 25.33, 23.81, 383233.0], ["2026-05-15", 24.01, 23.88, 25.08, 23.68, 362320.0], ["2026-05-18", 23.76, 24.0, 24.62, 23.44, 239229.0], ["2026-05-19", 23.89, 24.64, 24.73, 23.37, 334545.0], ["2026-05-20", 24.53, 25.39, 25.57, 24.2, 392842.0], ["2026-05-21", 25.48, 23.45, 25.83, 23.37, 359464.0], ["2026-05-22", 23.77, 24.2, 24.44, 23.37, 247599.0], ["2026-05-25", 24.23, 23.9, 24.31, 23.53, 293512.0], ["2026-05-26", 23.7, 23.22, 23.78, 22.78, 327266.0], ["2026-05-27", 23.17, 23.55, 24.87, 22.46, 504755.0], ["2026-05-28", 23.56, 24.72, 25.1, 23.05, 473322.0], ["2026-05-29", 24.67, 22.69, 24.88, 22.3, 449647.0], ["2026-06-01", 22.61, 21.78, 23.19, 21.75, 333023.0], ["2026-06-02", 21.9, 22.68, 23.19, 21.59, 399499.0], ["2026-06-03", 23.07, 22.35, 23.66, 22.14, 420618.0], ["2026-06-04", 21.91, 21.38, 22.21, 21.2, 344309.0], ["2026-06-05", 21.27, 21.32, 22.53, 20.95, 379094.0], ["2026-06-08", 20.6, 19.19, 20.8, 19.19, 421496.0], ["2026-06-09", 19.68, 19.25, 19.68, 18.88, 290510.0], ["2026-06-10", 18.85, 18.79, 19.49, 18.42, 282302.0], ["2026-06-11", 18.61, 17.87, 18.77, 17.75, 289710.0], ["2026-06-12", 18.23, 17.55, 18.38, 17.43, 300332.0], ["2026-06-15", 17.79, 18.87, 19.04, 17.61, 353803.0], ["2026-06-16", 18.94, 18.86, 19.03, 18.55, 229197.0], ["2026-06-17", 18.66, 19.83, 20.62, 18.65, 418117.0], ["2026-06-18", 19.79, 19.94, 20.79, 19.71, 250384.0], ["2026-06-22", 19.91, 20.02, 20.23, 19.03, 293606.0], ["2026-06-23", 19.89, 19.09, 19.96, 18.9, 280500.0], ["2026-06-24", 19.09, 18.89, 19.1, 18.5, 215024.0], ["2026-06-25", 18.9, 18.7, 19.26, 18.33, 216184.0], ["2026-06-26", 18.52, 17.7, 18.52, 17.49, 307059.0], ["2026-06-29", 17.65, 17.43, 17.83, 16.88, 228367.0], ["2026-06-30", 17.49, 19.17, 19.17, 17.48, 213083.0], ["2026-07-01", 19.59, 21.09, 21.09, 19.51, 418753.0], ["2026-07-02", 21.29, 21.27, 22.25, 20.5, 842213.0], ["2026-07-03", 23.4, 23.4, 23.4, 23.4, 78582.0], ["2026-07-06", 25.74, 25.74, 25.74, 25.13, 449901.0], ["2026-07-07", 27.0, 26.45, 28.3, 26.29, 1756529.0], ["2026-07-08", 27.66, 29.1, 29.1, 26.9, 552698.0], ["2026-07-09", 27.0, 28.96, 29.2, 26.45, 1428423.0], ["2026-07-10", 28.6, 27.47, 29.7, 27.47, 1332079.0], ["2026-07-13", 27.72, 28.99, 30.22, 27.72, 1533230.0], ["2026-07-14", 31.0, 28.62, 31.89, 27.0, 1780122.0], ["2026-07-15", 28.38, 27.52, 28.95, 26.69, 1465175.0], ["2026-07-16", 26.42, 28.51, 29.3, 26.3, 1758646.0], ["2026-07-17", 27.92, 29.95, 31.36, 27.13, 2001954.0]]}, {"c": "603118", "n": "共进股份", "o": 2, "q": 14.95, "p": 10.01, "cs": ["其他"], "rc": [], "tg": "", "mcap": 117.7, "turn": 35.67, "vol": 53523.76, "kl": []}, {"c": "002432", "n": "九安医疗", "o": 3, "q": 79.2, "p": 10.0, "cs": ["医药医疗"], "rc": [], "tg": "", "mcap": 368.99, "turn": 20.58, "vol": 43695.45, "kl": []}, {"c": "300750", "n": "宁德时代", "o": 4, "q": 360.0, "p": -1.69, "cs": ["其他"], "rc": [], "tg": "", "mcap": 16655.94, "turn": -1.58, "vol": 43423.95, "kl": []}, {"c": "688521", "n": "芯原股份", "o": 5, "q": 231.6, "p": -4.91, "cs": ["其他"], "rc": [], "tg": "", "mcap": 1218.02, "turn": 2.43, "vol": 39557.6, "kl": []}, {"c": "600095", "n": "湘财股份", "o": 6, "q": 8.69, "p": 10.0, "cs": ["其他"], "rc": [], "tg": "", "mcap": 248.46, "turn": 39.57, "vol": 33998.45, "kl": []}, {"c": "601988", "n": "中国银行", "o": 7, "q": 5.96, "p": 2.76, "cs": ["金融"], "rc": [], "tg": "", "mcap": 19203.86, "turn": 5.84, "vol": 31989.55, "kl": []}, {"c": "600584", "n": "长电科技", "o": 8, "q": 85.49, "p": 2.74, "cs": ["半导体芯片"], "rc": [], "tg": "", "mcap": 1529.77, "turn": 2.73, "vol": 29174.25, "kl": []}, {"c": "301217", "n": "铜冠铜箔", "o": 9, "q": 129.05, "p": 1.45, "cs": ["其他"], "rc": [], "tg": "", "mcap": 1069.84, "turn": 1.38, "vol": 24432.53, "kl": []}, {"c": "600744", "n": "华银电力", "o": 10, "q": 5.96, "p": 9.96, "cs": ["电力"], "rc": [], "tg": "", "mcap": 121.06, "turn": 42.71, "vol": 24071.69, "kl": []}, {"c": "000779", "n": "甘咨询", "o": 11, "q": 12.23, "p": 9.98, "cs": ["其他"], "rc": [], "tg": "", "mcap": 56.85, "turn": 6.13, "vol": 21440.04, "kl": []}, {"c": "601857", "n": "中国石油", "o": 12, "q": 10.29, "p": 3.0, "cs": ["其他"], "rc": [], "tg": "", "mcap": 18832.86, "turn": 0.71, "vol": 20804.88, "kl": []}, {"c": "600309", "n": "万华化学", "o": 13, "q": 70.04, "p": 2.46, "cs": ["其他"], "rc": [], "tg": "", "mcap": 2192.58, "turn": -0.46, "vol": 20013.43, "kl": []}, {"c": "001896", "n": "豫能控股", "o": 14, "q": 13.96, "p": 3.41, "cs": ["其他"], "rc": [], "tg": "", "mcap": 213.0, "turn": 4.9, "vol": 19452.91, "kl": []}, {"c": "301176", "n": "逸豪新材", "o": 15, "q": 49.58, "p": -14.81, "cs": ["其他"], "rc": [], "tg": "", "mcap": 83.82, "turn": 2.41, "vol": 17276.35, "kl": []}, {"c": "300383", "n": "光环新网", "o": 16, "q": 12.85, "p": 4.73, "cs": ["通信"], "rc": [], "tg": "", "mcap": 230.99, "turn": 3.92, "vol": 17018.18, "kl": []}, {"c": "600722", "n": "金牛化工", "o": 17, "q": 8.53, "p": 10.06, "cs": ["化工"], "rc": [], "tg": "", "mcap": 58.03, "turn": 39.22, "vol": 16399.67, "kl": []}, {"c": "601288", "n": "农业银行", "o": 18, "q": 6.39, "p": 1.43, "cs": ["金融"], "rc": [], "tg": "", "mcap": 22363.92, "turn": 5.1, "vol": 15247.26, "kl": []}, {"c": "601728", "n": "中国电信", "o": 19, "q": 6.01, "p": 2.04, "cs": ["其他"], "rc": [], "tg": "", "mcap": 5499.58, "turn": 9.62, "vol": 14756.98, "kl": []}, {"c": "000759", "n": "中百集团", "o": 20, "q": 6.98, "p": 4.8, "cs": ["其他"], "rc": [], "tg": "", "mcap": 46.24, "turn": 15.04, "vol": 14033.57, "kl": []}, {"c": "688012", "n": "中微公司", "o": 21, "q": 350.69, "p": -2.97, "cs": ["半导体芯片"], "rc": [], "tg": "", "mcap": 3359.06, "turn": -0.69, "vol": 13324.29, "kl": []}, {"c": "688072", "n": "拓荆科技", "o": 22, "q": 699.08, "p": -3.17, "cs": ["半导体芯片"], "rc": [], "tg": "", "mcap": 2032.08, "turn": 0.51, "vol": 13047.66, "kl": []}, {"c": "002167", "n": "东方锆业", "o": 23, "q": 17.02, "p": -1.62, "cs": ["其他"], "rc": [], "tg": "", "mcap": 131.85, "turn": 1.04, "vol": 13028.91, "kl": []}, {"c": "600644", "n": "乐山电力", "o": 24, "q": 9.01, "p": 10.01, "cs": ["电力"], "rc": [], "tg": "", "mcap": 52.11, "turn": 24.74, "vol": 12967.16, "kl": []}, {"c": "000703", "n": "恒逸石化", "o": 25, "q": 14.65, "p": 4.12, "cs": ["其他"], "rc": [], "tg": "", "mcap": 559.86, "turn": 1.83, "vol": 12188.39, "kl": []}, {"c": "000037", "n": "深南电A", "o": 26, "q": 9.2, "p": 10.05, "cs": ["其他"], "rc": [], "tg": "", "mcap": 55.45, "turn": 31.94, "vol": 12134.19, "kl": []}, {"c": "688256", "n": "寒武纪", "o": 27, "q": 1190.58, "p": -6.93, "cs": ["其他"], "rc": [], "tg": "", "mcap": 7480.33, "turn": -4.44, "vol": 11813.4, "kl": []}, {"c": "600881", "n": "亚泰集团", "o": 28, "q": 1.86, "p": 10.06, "cs": ["其他"], "rc": [], "tg": "", "mcap": 60.12, "turn": 22.61, "vol": 11708.05, "kl": []}, {"c": "600331", "n": "宏达股份", "o": 29, "q": 11.11, "p": 4.12, "cs": ["其他"], "rc": [], "tg": "", "mcap": 293.48, "turn": 10.77, "vol": 11278.67, "kl": []}, {"c": "601398", "n": "工商银行", "o": 30, "q": 7.57, "p": 2.44, "cs": ["金融"], "rc": [], "tg": "", "mcap": 26979.95, "turn": 2.88, "vol": 11192.84, "kl": []}, {"c": "601016", "n": "节能风电", "o": 31, "q": 3.5, "p": 6.06, "cs": ["新能源"], "rc": [], "tg": "", "mcap": 229.06, "turn": 5.74, "vol": 10940.22, "kl": []}, {"c": "600795", "n": "国电电力", "o": 32, "q": 4.75, "p": 1.71, "cs": ["电力"], "rc": [], "tg": "", "mcap": 847.19, "turn": 11.99, "vol": 9807.1, "kl": []}, {"c": "002632", "n": "道明光学", "o": 33, "q": 10.59, "p": 9.97, "cs": ["通信"], "rc": [], "tg": "", "mcap": 66.15, "turn": 16.31, "vol": 9687.91, "kl": []}, {"c": "300113", "n": "顺网科技", "o": 34, "q": 17.01, "p": 1.07, "cs": ["半导体芯片"], "rc": [], "tg": "", "mcap": 114.68, "turn": 3.8, "vol": 9377.54, "kl": []}, {"c": "600021", "n": "上海电力", "o": 35, "q": 14.91, "p": 7.19, "cs": ["电力"], "rc": [], "tg": "", "mcap": 420.74, "turn": 2.16, "vol": 9255.15, "kl": []}, {"c": "688353", "n": "华盛锂电", "o": 36, "q": 88.5, "p": -2.86, "cs": ["新能源"], "rc": [], "tg": "", "mcap": 141.16, "turn": 3.98, "vol": 9251.48, "kl": []}, {"c": "000899", "n": "赣能股份", "o": 37, "q": 10.7, "p": 9.97, "cs": ["其他"], "rc": [], "tg": "", "mcap": 104.4, "turn": 24.68, "vol": 9228.08, "kl": []}, {"c": "688347", "n": "华虹宏力", "o": 38, "q": 309.0, "p": -5.75, "cs": ["其他"], "rc": [], "tg": "", "mcap": 5369.57, "turn": 0.09, "vol": 9106.0, "kl": []}, {"c": "301583", "n": "托伦斯", "o": 39, "q": 136.0, "p": -2.86, "cs": ["其他"], "rc": [], "tg": "", "mcap": 252.24, "turn": 4.56, "vol": 8958.86, "kl": []}, {"c": "601369", "n": "陕鼓动力", "o": 40, "q": 9.5, "p": 9.95, "cs": ["其他"], "rc": [], "tg": "", "mcap": 163.73, "turn": 26.62, "vol": 8859.16, "kl": []}, {"c": "688549", "n": "中巨芯-U", "o": 41, "q": 25.65, "p": 4.23, "cs": ["其他"], "rc": [], "tg": "", "mcap": 378.92, "turn": 3.93, "vol": 8812.59, "kl": []}, {"c": "600236", "n": "桂冠电力", "o": 42, "q": 10.62, "p": 10.05, "cs": ["电力"], "rc": [], "tg": "", "mcap": 837.11, "turn": 18.84, "vol": 8726.55, "kl": []}, {"c": "601939", "n": "建设银行", "o": 43, "q": 10.16, "p": 3.67, "cs": ["金融"], "rc": [], "tg": "", "mcap": 26578.6, "turn": 6.2, "vol": 8644.46, "kl": []}, {"c": "600227", "n": "赤天化", "o": 44, "q": 3.06, "p": 10.07, "cs": ["其他"], "rc": [], "tg": "", "mcap": 51.68, "turn": 7.88, "vol": 8476.61, "kl": []}, {"c": "002829", "n": "星网宇达", "o": 45, "q": 20.72, "p": 9.98, "cs": ["其他"], "rc": [], "tg": "", "mcap": 43.06, "turn": 13.92, "vol": 8311.92, "kl": []}, {"c": "002532", "n": "天山铝业", "o": 46, "q": 11.99, "p": -4.92, "cs": ["其他"], "rc": [], "tg": "", "mcap": 554.99, "turn": -1.26, "vol": 8303.59, "kl": []}, {"c": "603950", "n": "长源东谷", "o": 47, "q": 61.9, "p": -8.32, "cs": ["其他"], "rc": [], "tg": "", "mcap": 200.64, "turn": 0.5, "vol": 8105.97, "kl": []}, {"c": "605011", "n": "杭州热电", "o": 48, "q": 18.48, "p": 10.0, "cs": ["其他"], "rc": [], "tg": "", "mcap": 73.94, "turn": 17.84, "vol": 8074.35, "kl": []}, {"c": "600992", "n": "贵绳股份", "o": 49, "q": 11.72, "p": 10.05, "cs": ["其他"], "rc": [], "tg": "", "mcap": 28.72, "turn": 20.6, "vol": 8037.42, "kl": []}, {"c": "300738", "n": "奥飞数据", "o": 50, "q": 20.38, "p": 2.41, "cs": ["人工智能"], "rc": [], "tg": "", "mcap": 200.78, "turn": -0.61, "vol": 7790.52, "kl": []}, {"c": "600312", "n": "平高电气", "o": 51, "q": 18.15, "p": 4.67, "cs": ["其他"], "rc": [], "tg": "", "mcap": 246.28, "turn": 4.44, "vol": 7711.85, "kl": []}, {"c": "000400", "n": "许继电气", "o": 52, "q": 20.82, "p": 4.36, "cs": ["其他"], "rc": [], "tg": "", "mcap": 212.08, "turn": 7.14, "vol": 7618.59, "kl": []}, {"c": "600982", "n": "宁波能源", "o": 53, "q": 5.09, "p": 9.94, "cs": ["新能源"], "rc": [], "tg": "", "mcap": 56.89, "turn": 12.21, "vol": 7507.69, "kl": []}, {"c": "601766", "n": "中国中车", "o": 54, "q": 5.65, "p": 0.71, "cs": ["新能源汽车"], "rc": [], "tg": "", "mcap": 1621.49, "turn": 4.42, "vol": 7409.26, "kl": []}, {"c": "300766", "n": "每日互动", "o": 55, "q": 21.95, "p": 3.93, "cs": ["其他"], "rc": [], "tg": "", "mcap": 86.65, "turn": 3.22, "vol": 7398.89, "kl": []}, {"c": "300163", "n": "先锋新材", "o": 56, "q": 5.79, "p": -0.34, "cs": ["其他"], "rc": [], "tg": "", "mcap": 27.44, "turn": 0.44, "vol": 7156.28, "kl": []}, {"c": "300497", "n": "富祥股份", "o": 57, "q": 17.1, "p": -9.95, "cs": ["其他"], "rc": [], "tg": "", "mcap": 92.11, "turn": 1.59, "vol": 7046.31, "kl": []}, {"c": "001388", "n": "信通电子", "o": 58, "q": 24.74, "p": 10.0, "cs": ["半导体芯片"], "rc": [], "tg": "", "mcap": 57.83, "turn": 18.71, "vol": 7036.27, "kl": []}, {"c": "002132", "n": "恒星科技", "o": 59, "q": 4.56, "p": 0, "cs": ["半导体芯片"], "rc": [], "tg": "", "mcap": 63.91, "turn": 0.56, "vol": 6745.16, "kl": []}, {"c": "688433", "n": "华曙高科", "o": 60, "q": 84.01, "p": -6.1, "cs": ["其他"], "rc": [], "tg": "", "mcap": 349.13, "turn": 8.67, "vol": 6634.0, "kl": []}, {"c": "601678", "n": "滨化股份", "o": 61, "q": 5.19, "p": 2.37, "cs": ["其他"], "rc": [], "tg": "", "mcap": 125.03, "turn": 3.32, "vol": 6612.01, "kl": []}, {"c": "000683", "n": "博源化工", "o": 62, "q": 5.69, "p": 4.4, "cs": ["化工"], "rc": [], "tg": "", "mcap": 211.49, "turn": 3.6, "vol": 6606.84, "kl": []}, {"c": "300317", "n": "珈伟新能", "o": 63, "q": 4.13, "p": 16.01, "cs": ["其他"], "rc": [], "tg": "", "mcap": 34.29, "turn": 0.31, "vol": 6570.89, "kl": []}, {"c": "001369", "n": "双欣材料", "o": 64, "q": 12.95, "p": 10.03, "cs": ["其他"], "rc": [], "tg": "", "mcap": 148.54, "turn": 16.54, "vol": 6553.63, "kl": []}, {"c": "600011", "n": "华能国际", "o": 65, "q": 6.92, "p": 2.52, "cs": ["其他"], "rc": [], "tg": "", "mcap": 1086.31, "turn": 1.91, "vol": 6469.86, "kl": []}, {"c": "688192", "n": "迪哲医药-U", "o": 66, "q": 61.42, "p": -4.03, "cs": ["医药医疗"], "rc": [], "tg": "", "mcap": 285.7, "turn": 4.13, "vol": 6344.16, "kl": []}, {"c": "600028", "n": "中国石化", "o": 67, "q": 5.03, "p": 0.8, "cs": ["其他"], "rc": [], "tg": "", "mcap": 6082.55, "turn": 0.33, "vol": 6319.12, "kl": []}, {"c": "600360", "n": "华微电子", "o": 68, "q": 11.59, "p": -10.02, "cs": ["半导体芯片"], "rc": [], "tg": "", "mcap": 111.3, "turn": 2.58, "vol": 6186.45, "kl": []}, {"c": "001258", "n": "立新能源", "o": 69, "q": 8.27, "p": 9.97, "cs": ["新能源"], "rc": [], "tg": "", "mcap": 77.19, "turn": 12.81, "vol": 6130.81, "kl": []}, {"c": "300390", "n": "天华新能", "o": 70, "q": 57.02, "p": -3.37, "cs": ["其他"], "rc": [], "tg": "", "mcap": 473.69, "turn": -0.99, "vol": 6117.46, "kl": []}, {"c": "300785", "n": "值得买", "o": 71, "q": 35.6, "p": 0.34, "cs": ["其他"], "rc": [], "tg": "", "mcap": 70.79, "turn": 3.18, "vol": 5861.77, "kl": []}, {"c": "002766", "n": "索菱股份", "o": 72, "q": 3.94, "p": 10.06, "cs": ["其他"], "rc": [], "tg": "", "mcap": 33.88, "turn": 62.41, "vol": 5729.97, "kl": []}, {"c": "003001", "n": "中岩大地", "o": 73, "q": 19.56, "p": 10.01, "cs": ["其他"], "rc": [], "tg": "", "mcap": 34.14, "turn": 57.78, "vol": 5519.34, "kl": []}, {"c": "603300", "n": "海南华铁", "o": 74, "q": 4.84, "p": 2.54, "cs": ["其他"], "rc": [], "tg": "", "mcap": 96.76, "turn": 3.4, "vol": 5508.1, "kl": []}, {"c": "002487", "n": "大金重工", "o": 75, "q": 37.37, "p": -8.74, "cs": ["其他"], "rc": [], "tg": "", "mcap": 276.57, "turn": -1.24, "vol": 5391.75, "kl": []}, {"c": "300795", "n": "米奥会展", "o": 76, "q": 10.48, "p": 20.05, "cs": ["其他"], "rc": [], "tg": "", "mcap": 31.32, "turn": 43.47, "vol": 5253.74, "kl": []}, {"c": "688325", "n": "赛微微电", "o": 77, "q": 115.8, "p": -2.69, "cs": ["半导体芯片"], "rc": [], "tg": "", "mcap": 99.75, "turn": 0.97, "vol": 5196.36, "kl": []}, {"c": "300164", "n": "通源石油", "o": 78, "q": 10.48, "p": 6.29, "cs": ["其他"], "rc": [], "tg": "", "mcap": 61.67, "turn": 1.63, "vol": 5159.36, "kl": []}, {"c": "688498", "n": "源杰科技", "o": 79, "q": 1656.0, "p": -9.31, "cs": ["半导体芯片"], "rc": [], "tg": "", "mcap": 2061.73, "turn": -2.07, "vol": 4983.0, "kl": []}, {"c": "603567", "n": "珍宝岛", "o": 80, "q": 6.03, "p": 10.04, "cs": ["其他"], "rc": [], "tg": "", "mcap": 56.7, "turn": 7.82, "vol": 4821.7, "kl": []}, {"c": "002142", "n": "宁波银行", "o": 81, "q": 31.64, "p": 1.15, "cs": ["金融"], "rc": [], "tg": "", "mcap": 2089.38, "turn": -10.55, "vol": 4800.62, "kl": []}, {"c": "600539", "n": "狮头股份", "o": 82, "q": 16.88, "p": -2.03, "cs": ["其他"], "rc": [], "tg": "", "mcap": 38.82, "turn": 2.05, "vol": 4779.09, "kl": []}, {"c": "603186", "n": "华正新材", "o": 83, "q": 159.3, "p": -10.0, "cs": ["其他"], "rc": [], "tg": "", "mcap": 249.77, "turn": 0.17, "vol": 4667.42, "kl": []}, {"c": "301092", "n": "争光股份", "o": 84, "q": 61.82, "p": 11.13, "cs": ["通信"], "rc": [], "tg": "", "mcap": 83.17, "turn": 3.77, "vol": 4653.56, "kl": []}, {"c": "601615", "n": "明阳智能", "o": 85, "q": 10.19, "p": -0.88, "cs": ["人工智能"], "rc": [], "tg": "", "mcap": 230.45, "turn": -3.85, "vol": 4550.7, "kl": []}, {"c": "002670", "n": "国盛证券", "o": 86, "q": 11.97, "p": 3.46, "cs": ["金融"], "rc": [], "tg": "", "mcap": 231.63, "turn": 4.9, "vol": 4518.52, "kl": []}, {"c": "601868", "n": "中国能建", "o": 87, "q": 2.52, "p": 0, "cs": ["其他"], "rc": [], "tg": "", "mcap": 1114.85, "turn": 4.47, "vol": 4468.36, "kl": []}, {"c": "002966", "n": "苏州银行", "o": 88, "q": 8.04, "p": 1.9, "cs": ["金融"], "rc": [], "tg": "", "mcap": 359.44, "turn": 6.83, "vol": 4248.85, "kl": []}, {"c": "688150", "n": "莱特光电", "o": 89, "q": 47.51, "p": -3.1, "cs": ["通信"], "rc": [], "tg": "", "mcap": 191.2, "turn": -0.05, "vol": 4050.12, "kl": []}, {"c": "300469", "n": "信息发展", "o": 90, "q": 53.83, "p": 0.37, "cs": ["其他"], "rc": [], "tg": "", "mcap": 133.63, "turn": 0.32, "vol": 4049.66, "kl": []}, {"c": "603588", "n": "高能环境", "o": 91, "q": 12.21, "p": -5.35, "cs": ["其他"], "rc": [], "tg": "", "mcap": 185.99, "turn": -0.87, "vol": 4028.23, "kl": []}, {"c": "688333", "n": "铂力特", "o": 92, "q": 99.16, "p": -11.32, "cs": ["其他"], "rc": [], "tg": "", "mcap": 272.02, "turn": -3.59, "vol": 4023.84, "kl": []}, {"c": "000722", "n": "湖南发展", "o": 93, "q": 13.83, "p": 10.02, "cs": ["其他"], "rc": [], "tg": "", "mcap": 79.02, "turn": 5.14, "vol": 3910.3, "kl": []}, {"c": "600280", "n": "中央商场", "o": 94, "q": 2.92, "p": 7.35, "cs": ["其他"], "rc": [], "tg": "", "mcap": 32.95, "turn": 5.61, "vol": 3896.39, "kl": []}, {"c": "603120", "n": "肯特催化", "o": 95, "q": 54.81, "p": 6.41, "cs": ["其他"], "rc": [], "tg": "", "mcap": 49.55, "turn": 8.96, "vol": 3878.96, "kl": []}, {"c": "002488", "n": "金固股份", "o": 96, "q": 8.48, "p": 0.83, "cs": ["其他"], "rc": [], "tg": "", "mcap": 84.41, "turn": 5.04, "vol": 3795.6, "kl": []}, {"c": "600162", "n": "香江控股", "o": 97, "q": 3.06, "p": 10.07, "cs": ["其他"], "rc": [], "tg": "", "mcap": 100.01, "turn": 2.82, "vol": 3756.13, "kl": []}, {"c": "603730", "n": "岱美股份", "o": 98, "q": 10.4, "p": -2.8, "cs": ["其他"], "rc": [], "tg": "", "mcap": 223.45, "turn": -2.17, "vol": 3675.22, "kl": []}, {"c": "300368", "n": "汇金股份", "o": 99, "q": 7.84, "p": 5.09, "cs": ["其他"], "rc": [], "tg": "", "mcap": 41.47, "turn": 1.79, "vol": 3603.6, "kl": []}, {"c": "300907", "n": "康平科技", "o": 100, "q": 47.6, "p": -6.67, "cs": ["半导体芯片"], "rc": [], "tg": "", "mcap": 45.7, "turn": 15.07, "vol": 3580.47, "kl": []}], "ut": "20:20:28", "dt": "2026-07-18"};
-;
-(function(s){
-if(!s||!s.length){document.getElementById('app').innerHTML='<div class="stat"><div class="n">暂无数据</div></div>';return}
-var up=s.filter(function(x){return x.p>0}).length;
-var dn=s.filter(function(x){return x.p<0}).length;
-var zt=s.filter(function(x){return x.p>=9.8}).length;
-var av=(s.reduce(function(a,x){return a+x.p},0)/s.length).toFixed(2);
-var g={};
-s.forEach(function(x){(x.cs||['其他']).forEach(function(cn){if(!g[cn])g[cn]=[];g[cn].push(x)})});
-var e=Object.entries(g).sort(function(a,b){return b[1].length-a[1].length});
-var h='<div class="stats"><div class="stat"><div class="n">'+s.length+'</div><div class="l">热门股票</div></div><div class="stat"><div class="n up">'+zt+'</div><div class="l">涨停</div></div><div class="stat"><div class="n up">'+up+'/<span class="dn">'+dn+'</span></div><div class="l">涨/跌</div></div><div class="stat"><div class="n">'+Object.keys(g).length+'</div><div class="l">行业大类</div></div><div class="stat"><div class="n '+((av>=0)?'up':'dn')+'">'+av+'%</div><div class="l">平均涨幅</div></div></div>';
-e.forEach(function(p){var cn=p[0],ss=p[1];
-var at={};ss.forEach(function(x){(x.rc||[]).forEach(function(t){at[t]=1})});
-var tags=Object.keys(at).sort().slice(0,5).join(' · ');
-h+='<div class="sector"><div class="sector-hd"><span>'+cn+'</span> <span class="badge">'+ss.length+'</span></div><ul class="stock-list">';
-ss.sort(function(a,b){return parseInt(a.o)-parseInt(b.o)}).forEach(function(x){var cp=x.p||0,cl=cp>0?'r':'g',sg=cp>0?'+':'';
-h+='<li class="stock-row" onclick="showDetail(\''+x.c+'\',this)">'+
-'<div class="stock-top">'+
-'<span class="stock-rank">#'+x.o+'</span>'+
-'<span class="stock-name">'+(x.n||"-")+'</span>'+
-'<span class="stock-chg '+cl+'">'+sg+cp.toFixed(2)+'%</span>'+
-'</div>'+
-'<span class="stock-sub">'+((x.rc||[]).filter(function(t){return ['同花顺指数','国家大基金持股','超级品牌','中国AI 50','同花顺漂亮100','证金持股','同花顺中特估100','同花顺果指数'].indexOf(t)<0})[0]||(x.cs||[])[0]||'')+'</span>'+
-'</li>'
-});
-h+='</ul></div>'
-});
-document.getElementById('app').innerHTML = h;
-})(DATA.s);
+const THS_API = 'https://eq.10jqka.com.cn/open/api/hot_list/v1/hot_stock/a/hour/data.txt';
+const PRICE_API = 'https://qt.gtimg.cn/q=';
 
-// ====== 实时时钟 ======
-(function tick(){
-var el=document.getElementById('liveTime');
-if(el){
-var d=new Date();
-var h=d.getHours(),m=d.getMinutes(),s=d.getSeconds();
-el.textContent=(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
-}
-setTimeout(tick,1000);
-})();
-
-// ====== 实时行情刷新（新浪财经） ======
-// 只刷新涨跌幅，股价保持内嵌数据不动
-function getEx(c){return c.charAt(0)==='6'?'sh':'sz';}
-
-function refreshQuotes(){
-var ss=DATA.s;
-if(!ss||!ss.length)return;
-var done=0,total=0;
-
-for(var s=0;s<ss.length;s+=50){
-total++;
-(function(start){
-var end=Math.min(start+50,ss.length);
-var list=[];
-for(var i=start;i<end;i++)list.push(getEx(ss[i].c)+ss[i].c);
-var scr=document.createElement('script');
-scr.src='https://hq.sinajs.cn/list='+list.join(',');
-scr.onload=scr.onerror=function(){
-done++;
-if(done<total)return;
-// 只更新涨跌幅，不改股价
-var updated=0;
-for(var i=0;i<ss.length;i++){
-var v=window['hq_str_'+getEx(ss[i].c)+ss[i].c];
-if(!v)continue;
-try{
-var p=v.split(',');
-var now=+p[3],yc=+p[2];
-if(now&&!isNaN(now)&&yc){
-ss[i].p=+((now-yc)/yc*100).toFixed(2);
-updated++;
-}
-}catch(e){}
-}
-if(!updated)return;
-// 只改涨跌幅列
-var chgAll=document.querySelectorAll('.stock-chg');
-for(var i=0;i<chgAll.length&&i<ss.length;i++){
-var x=ss[i];if(!x)continue;
-var chgEl=chgAll[i];
-var cp=x.p||0,sg=cp>0?'+':'';
-chgEl.textContent=sg+cp.toFixed(2)+'%';
-chgEl.className='stock-chg '+(cp>0?'r':cp<0?'g':'');
-}
-// 更新统计
-var up=ss.filter(function(s){return s.p>0}).length;
-var dn=ss.filter(function(s){return s.p<0}).length;
-var zt=ss.filter(function(s){return s.p>=9.8}).length;
-var av=(ss.reduce(function(a,s){return a+s.p},0)/ss.length).toFixed(2);
-var st=document.querySelectorAll('.stat .n');
-if(st.length>=2)st[1].textContent=zt;
-if(st.length>=3)st[2].innerHTML=up+'/<span class="dn">'+dn+'</span>';
-if(st.length>=5)st[4].textContent=av+'%';
-};
-document.body.appendChild(scr);
-})(s);
-}
+function classify(name, concepts) {
+  const text = name + ' ' + (concepts || []).join(' ');
+  const rules = [
+    ['通信', ['通信','CPO','光纤','光模块','F5G','5G','6G','共封装光学']],
+    ['半导体', ['半导体','芯片','存储芯片','封装','集成电路','PCB','先进封装','中芯','晶圆','汽车芯片','功率半导体','MCU','FPGA']],
+    ['电力', ['电力','电网','特高压','绿色电力','虚拟电厂','超超临界','抽水蓄能','核电','风电','光热','智能电网','发电']],
+    ['新能源', ['光伏','储能','碳交易','页岩气','氢能源','太阳能','新能源','盐湖提锂','钠离子','固态电池','锂电','电池','能源']],
+    ['医药', ['医药','医疗','生物','CRO','流感','创新药','仿制药','血氧仪','医疗器械']],
+    ['人工智能', ['人工智能','算力','大模型','机器人','AI','东数西算']],
+    ['消费电子', ['消费电子','果指数','无线耳机','智能穿戴','电子纸','MicroLED','光学光电子','VR','AR','面板']],
+    ['新能源汽车', ['新能源汽车','充电桩','新能源车','动力电池','整车','汽车零部件','无人驾驶','汽车']],
+    ['地产', ['房地产','物业','房产','城中村','新型城镇化','房屋检测']],
+    ['化工', ['化工','化肥','煤化工','氟化工','磷化工','新材料','有机硅']],
+    ['金融', ['金融','银行','证券','保险','券商']],
+    ['消费', ['消费','食品','饮料','白酒','免税','旅游','农业','猪肉','种植','纺织','服装','家电']],
+    ['数字经济', ['数字经济','NFT','Web3','区块链','元宇宙','数据确权','数据要素','数字货币']],
+    ['军工', ['军工','航天','航空','国防','航母','卫星','导航','国产航母']],
+    ['传媒', ['传媒','游戏','电竞','影视','广告','互联网','云游戏']],
+    ['基建', ['基建','建筑','工程','装配式','建筑节能','水利','路桥','建材']],
+    ['机械设备', ['机械','设备','高端装备','工业母机','机床','工程机械']],
+    ['有色/钢铁', ['有色','钢铁','黄金','铜','铝','矿','金属','稀土','小金属']],
+    ['环保', ['环保','碳中和','净水','污水处理']],
+    ['物流运输', ['物流','航运','港口','运输','快递']],
+    ['教育', ['教育','培训']],
+  ];
+  for (const [cat, kws] of rules) {
+    for (const kw of kws) {
+      if (text.includes(kw)) return cat;
+    }
+  }
+  return '';
 }
 
-setTimeout(refreshQuotes, 500);
+const FILTER = ['同花顺指数','国家大基金持股','超级品牌','中国AI 50','同花顺漂亮100','证金持股','同花顺中特估100','同花顺果指数','国企改革','新股与次新股','高股息精选','注册制次新股','同花顺人工智能','含H股的H股','央企国企改革','MSCI概念','富时罗素概念股','标普道琼斯A股','2026一季报预增','同花顺出海50'];
 
-
-function showDetail(code,el){
-var x=DATA.s.find(function(v){return v.c===code});
-if(!x)return;
-document.getElementById('ko_name').textContent=x.n;
-document.getElementById('ko_code').textContent=x.c;
-var cc=x.p>=0?'#ff6b6b':'#00b894';
-document.getElementById('ko_chg').innerHTML='<span style="color:'+cc+'">'+(x.p>0?'+':'')+x.p.toFixed(2)+'%</span>';
-var o=document.getElementById('kline_overlay');
-o.style.display='flex';
-setTimeout(function(){drawKline(x);},80);
-}
-// Close overlay
-document.addEventListener('click',function(e){
-if(e.target&&e.target.id==='kline_close'){
-document.getElementById('kline_overlay').style.display='none';
-}
-});
-
-
-function calcMACD(prices,f,s,sg){
-f=f||12;s=s||26;sg=sg||9;
-function ema(d,p){var k=2/(p+1),r=[d[0]];for(var i=1;i<d.length;i++)r.push(d[i]*k+r[i-1]*(1-k));return r}
-var e12=ema(prices,f),e26=ema(prices,s);
-var ml=e12.map(function(v,i){return v-e26[i]});
-var sl=ema(ml,sg);
-var hist=ml.map(function(v,i){return v-sl[i]});
-return{macd:ml,signal:sl,hist:hist};
+async function fetchWithFallback(url, options) {
+  try {
+    const r = await fetch(url, { ...options, mode: 'cors' });
+    if (r.ok) return r;
+  } catch(e) {}
+  // CORS proxy fallback
+  const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+  return fetch(proxy, { headers: { 'User-Agent': 'Mozilla/5.0' } });
 }
 
-function drawKline(x){
-var c=document.getElementById('canvas_kline');
-var par=c.parentElement;
-var pw=par.clientWidth;
-var ph=par.clientHeight;
-var dpr=window.devicePixelRatio||1;
-var W=Math.round(pw);
-var H=Math.round(W*0.75);
-c.width=W*dpr;c.height=H*dpr;
-c.style.width=W+'px';c.style.height=H+'px';
-var ctx=c.getContext('2d');ctx.scale(dpr,dpr);
-
-var pad={t:18,b:30,l:52,r:16};
-
-var kl=x.kl||[];
-if(!kl.length){ctx.fillStyle='#999';ctx.font='14px sans-serif';ctx.textAlign='center';ctx.fillText('暂无K线数据',W/2,H/2);return}
-var bars=kl.map(function(d){
-var date=d[0];
-if(date&&date.indexOf('-')<0&&date.length===8)date=date.substring(0,4)+'-'+date.substring(4,6)+'-'+date.substring(6,8);
-return{d:date,o:parseFloat(d[1]),c:parseFloat(d[2]),h:parseFloat(d[3]),l:parseFloat(d[4]),v:parseFloat(d[5])}
-});
-bars.sort(function(a,b){return a.d.localeCompare(b.d)});
-// 只保留最近5个月（约105个交易日）
-if(bars.length>168)bars=bars.slice(bars.length-168);
-var n=bars.length;
-var maxH=Math.max.apply(null,bars.map(function(b){return b.h}));
-var minL=Math.min.apply(null,bars.map(function(b){return b.l}));
-if(maxH===minL||maxH-minL<0.01){maxH*=1.02;minL*=0.98}
-var rangeP=maxH-minL;
-var maxV=Math.max.apply(null,bars.map(function(b){return b.v}))||1;
-var prices=bars.map(function(b){return b.c});
-var macd=calcMACD(prices);
-var maxMACD=Math.max.apply(null,macd.hist.map(Math.abs))||1;
-
-// Layout: K线55% + 成交量15% + MACD30%
-var totalH=H-pad.t-pad.b-6;
-var kH=Math.floor(totalH*0.55),vH=Math.floor(totalH*0.15),mH=totalH-kH-vH;
-var cw=W-pad.l-pad.r;
-function xPos(i){return pad.l+(i+0.5)/n*cw}
-function yPrice(v){return pad.t+kH-(v-minL)/rangeP*kH}
-function yVol(v){return pad.t+kH+vH-(v)/maxV*vH}
-function yMACD(v){return pad.t+kH+vH+mH-(v+maxMACD)/(2*maxMACD)*mH}
-
-// Grid lines
-ctx.strokeStyle='rgba(0,0,0,.06)';ctx.lineWidth=0.5;
-for(var i=0;i<5;i++){var y=pad.t+kH/4*i;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cw,y);ctx.stroke()}
-ctx.strokeStyle='rgba(0,0,0,.1)';ctx.lineWidth=0.5;
-ctx.beginPath();ctx.moveTo(pad.l,pad.t+kH);ctx.lineTo(pad.l+cw,pad.t+kH);ctx.stroke();
-
-// MA5, MA10
-var ma5=[],ma10=[];
-for(var i=0;i<n;i++){
-if(i>=4){var s=0;for(var j=i-4;j<=i;j++)s+=bars[j].c;ma5.push(s/5)}else ma5.push(null)
-if(i>=9){var s=0;for(var j=i-9;j<=i;j++)s+=bars[j].c;ma10.push(s/10)}else ma10.push(null)
+async function main() {
+  try {
+    // 1. Fetch 同花顺 hot list
+    let resp = await fetchWithFallback(THS_API, { headers: { 'User-Agent': 'Mozilla/5.0', 'Referer': 'https://10jqka.com.cn' } });
+    if (!resp.ok) throw new Error('同花顺API: ' + resp.status);
+    const raw = await resp.json();
+    const hotList = raw.data.stock_list.slice(0, 100);
+    
+    // 2. Fetch prices
+    const codes = hotList.map(s => (s.code.startsWith('6') ? 'sh' : 'sz') + s.code);
+    const prices = {};
+    for (let i = 0; i < codes.length; i += 50) {
+      const batch = codes.slice(i, i + 50);
+      const presp = await fetchWithFallback(PRICE_API + batch.join(','), { headers: { 'User-Agent': 'Mozilla/5.0' } });
+      const text = await presp.text();
+      text.split(';').forEach(line => {
+        line = line.trim();
+        if (!line || !line.includes('="')) return;
+        const vn = line.split('=')[0].trim();
+        const vals = line.split('="')[1].replace(/;$/, '').split('~');
+        if (vals.length < 33) return;
+        prices[vn] = { q: parseFloat(vals[3]) || 0, p: parseFloat(vals[32]) || 0 };
+      });
+    }
+    
+    // 3. Build stock data
+    const stocks = hotList.map((s, i) => {
+      const code = s.code;
+      const tag = s.tag || {};
+      const concepts = tag.concept_tag || [];
+      const vn = (code.startsWith('6') ? 'v_sh' : 'v_sz') + code;
+      const p = prices[vn] || { q: 0, p: 0 };
+      return { c: code, n: s.name, o: i + 1, q: p.q, p: p.p, cs: [classify(s.name, concepts)], rc: concepts, kl: [] };
+    });
+    
+    // 4. Render
+    const now = new Date();
+    document.getElementById('liveTime').textContent = 
+      String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    
+    render(stocks);
+  } catch(e) {
+    document.getElementById('app').innerHTML = '<div class="loading">数据获取失败: ' + e.message + '</div>';
+  }
 }
 
-// Candles
-var barW=Math.max(cw/n*0.5,1);
-for(var i=0;i<n;i++){
-var b=bars[i];var isUp=b.c>b.o;var col=isUp?'#d63031':'#00b894';
-var cx=xPos(i);
-ctx.strokeStyle=col;ctx.lineWidth=0.8;
-ctx.beginPath();ctx.moveTo(cx,yPrice(b.h));ctx.lineTo(cx,yPrice(b.l));ctx.stroke();
-var top=Math.min(yPrice(b.o),yPrice(b.c)),bot=Math.max(yPrice(b.o),yPrice(b.c));
-ctx.fillStyle=col;ctx.fillRect(cx-barW/2,top,Math.max(barW,1),Math.max(bot-top,1));
-ctx.fillStyle=isUp?'rgba(214,48,49,.3)':'rgba(0,184,148,.3)';
-ctx.fillRect(cx-barW/2,yVol(b.v),Math.max(barW,1),pad.t+kH+vH-yVol(b.v));
+function render(s) {
+  const up = s.filter(x => x.p > 0).length;
+  const dn = s.filter(x => x.p < 0).length;
+  const zt = s.filter(x => x.p >= 9.8).length;
+  const av = (s.reduce((a,x) => a + x.p, 0) / s.length).toFixed(2);
+  const g = {};
+  s.forEach(x => { const cn = (x.cs||[''])[0]; if (cn) { if (!g[cn]) g[cn] = []; g[cn].push(x); } });
+  const e = Object.entries(g).sort((a,b) => b[1].length - a[1].length);
+  let h = '<div class="stats"><div class="stat"><div class="n">'+s.length+'</div><div class="l">热门股票</div></div><div class="stat"><div class="n up">'+zt+'</div><div class="l">涨停</div></div><div class="stat"><div class="n up">'+up+'/<span class="dn">'+dn+'</span></div><div class="l">涨/跌</div></div><div class="stat"><div class="n">'+Object.keys(g).length+'</div><div class="l">行业大类</div></div><div class="stat"><div class="n '+(av>=0?'up':'dn')+'">'+av+'%</div><div class="l">平均涨幅</div></div></div>';
+  e.forEach(([cn, ss]) => {
+    h += '<div class="sector"><div class="sector-hd"><span>'+cn+'</span><span class="badge">'+ss.length+'只</span></div><ul class="stock-list">';
+    ss.sort((a,b) => a.o - b.o).forEach(x => {
+      const cp = x.p || 0, cl = cp > 0 ? 'r' : 'g', sg = cp > 0 ? '+' : '';
+      const sub = (x.rc||[]).filter(t => !FILTER.includes(t))[0] || x.cs[0] || '';
+      h += '<li class="stock-row" onclick="showDetail(\''+x.c+'\')"><div class="stock-top"><span class="stock-rank">#'+x.o+'</span><span class="stock-name">'+(x.n||'-')+'</span><span class="stock-chg '+cl+'">'+sg+cp.toFixed(2)+'%</span></div><span class="stock-sub">'+sub+'</span></li>';
+    });
+    h += '</ul></div>';
+  });
+  document.getElementById('app').innerHTML = h;
+  window._stocks = s;
 }
 
-// MA5
-ctx.strokeStyle='#f39c12';ctx.lineWidth=1;ctx.beginPath();var started=false;
-for(var i=0;i<n;i++){if(ma5[i]!==null){var px=xPos(i),py=yPrice(ma5[i]);if(!started){ctx.moveTo(px,py);started=true}else ctx.lineTo(px,py)}}
-ctx.stroke();
-// MA10
-ctx.strokeStyle='#9b59b6';ctx.lineWidth=1;ctx.beginPath();started=false;
-for(var i=0;i<n;i++){if(ma10[i]!==null){var px=xPos(i),py=yPrice(ma10[i]);if(!started){ctx.moveTo(px,py);started=true}else ctx.lineTo(px,py)}}
-ctx.stroke();
-
-// MACD
-var y0=yMACD(0);
-ctx.strokeStyle='rgba(0,0,0,.2)';ctx.lineWidth=0.5;
-ctx.beginPath();ctx.moveTo(pad.l,y0);ctx.lineTo(pad.l+cw,y0);ctx.stroke();
-for(var i=0;i<n;i++){
-var hv=macd.hist[i];
-var col=hv>=0?'rgba(214,48,49,.6)':'rgba(0,184,148,.6)';
-var cx=xPos(i);var yh=yMACD(hv);
-ctx.fillStyle=col;ctx.fillRect(cx-barW/2,Math.min(y0,yh),Math.max(barW,1),Math.abs(yh-y0));
+function showDetail(code) {
+  const s = window._stocks.find(x => x.c === code); if (!s) return;
+  let p = document.getElementById('detail');
+  if (!p) { p = document.createElement('div'); p.id = 'detail'; p.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:999;background:#fff;overflow-y:auto'; document.body.appendChild(p); }
+  p.style.display = 'block';
+  const cc = s.p >= 0 ? '#ff6b6b' : '#27ae60', sg = s.p >= 0 ? '+' : '';
+  const sub = (s.rc||[]).filter(t => !FILTER.includes(t)).slice(0,3).join(' · ') || '--';
+  p.innerHTML = '<div style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,10px))"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:20px;font-weight:700">'+(s.n||'-')+'</span><span style="font-size:13px;opacity:.6">'+(s.c||'')+'</span><div onclick="closeDetail()" style="margin-left:auto;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer">✕</div></div><div style="display:flex;align-items:baseline;gap:12px"><span style="font-size:32px;font-weight:700">'+(s.q||'--')+'</span><span style="font-size:18px;font-weight:600;color:'+cc+'">'+sg+(s.p||0).toFixed(2)+'%</span></div><div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><span style="background:rgba(255,255,255,.1);padding:4px 12px;border-radius:8px;font-size:12px">热度: <b>#'+s.o+'</b></span><span style="background:rgba(255,255,255,.1);padding:4px 12px;border-radius:8px;font-size:12px">概念: <b>'+sub+'</b></span></div></div><div style="padding:16px;color:#999;text-align:center;font-size:14px">日K线图加载中...</div>';
 }
+function closeDetail() { const el = document.getElementById('detail'); if (el) el.style.display = 'none'; }
 
-// Labels
-ctx.fillStyle='#999';ctx.font='10px sans-serif';ctx.textAlign='right';
-ctx.fillText(maxH.toFixed(2),pad.l-4,pad.t+12);ctx.fillText(minL.toFixed(2),pad.l-4,pad.t+kH+4);
-ctx.fillStyle='#999';ctx.font='9px sans-serif';
-ctx.fillText(maxMACD.toFixed(2),pad.l-4,pad.t+kH+vH+10);ctx.fillText((-maxMACD).toFixed(2),pad.l-4,pad.t+kH+vH+mH-2);
-ctx.textAlign='center';ctx.fillStyle='#999';ctx.font='9px sans-serif';
-var step=Math.max(1,Math.floor(n/6));
-for(var i=0;i<n;i+=step)ctx.fillText(bars[i].d,pad.l+(i+0.5)/n*cw,H-8);
-ctx.textAlign='left';ctx.font='9px sans-serif';
-ctx.fillStyle='#f39c12';ctx.fillText('MA5',pad.l+cw-55,pad.t+12);
-ctx.fillStyle='#9b59b6';ctx.fillText('MA10',pad.l+cw-55,pad.t+24);
-}
+main();
 </script>
 </body>
 </html>
