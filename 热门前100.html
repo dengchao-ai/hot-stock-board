@@ -19,7 +19,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .container{max-width:100%;margin:0 auto;padding:10px 10px calc(10px + var(--safe-b))}
 /* Stats */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
-.stat{background:#fff;border-radius:12px;padding:10px 4px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.stat{background:#fff;border-radius:12px;padding:10px 4px;text-align:center;border:1px solid #e8e8ed}
 .stat .n{font-size:18px;font-weight:700;color:#1a1a2e;line-height:1.3}
 .stat .n.up{color:#d63031}
 .stat .n .dn{color:#00b894}
@@ -28,23 +28,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .sector{background:#fff;border-radius:12px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.04);overflow:hidden}
 .sector-hd{padding:11px 14px;font-size:14px;font-weight:600;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;gap:8px;background:#fafbfc}
 .sector-hd .badge{background:#1a1a2e;color:#fff;font-size:11px;padding:1px 8px;border-radius:10px;font-weight:600}
-/* List-style rows (replaces table) */
-.stock-list{list-style:none}
-.stock-row{display:flex;padding:11px 14px;border-bottom:1px solid #f2f2f2;align-items:center;gap:6px;cursor:pointer;transition:background .15s;background:#fff}
-.stock-row:last-child{border-bottom:none}
-.stock-row:active{background:#f5f5f7}
-.stock-rank{width:26px;font-size:12px;font-weight:700;color:#d63031;text-align:center;flex-shrink:0}
-.stock-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
-.stock-name{font-size:14px;font-weight:500;color:#1d1d1f;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.stock-sub{font-size:11px;color:#999;display:flex;gap:6px;align-items:center}
-.stock-sub .tag{display:inline-block;padding:0 5px;border-radius:3px;font-size:10px;font-weight:600;line-height:1.5}
-.tag-zt{background:#fde8e8;color:#d63031}
-.tag-jzt{background:#fff3e0;color:#e67e22}
-.tag-pop{background:#e8f4fd;color:#2980b9}
-.stock-price{text-align:right;font-weight:600;font-size:15px;color:#1d1d1f;min-width:58px;flex-shrink:0}
-.stock-chg{text-align:right;font-weight:700;font-size:14px;min-width:48px;flex-shrink:0}
+/* Stock grid - 3 cols */
+.stock-list{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px}
+.stock-row{display:flex;flex-direction:column;padding:10px 12px;cursor:pointer;background:#fff;border-radius:10px;border:1px solid #e8e8ed}
+.stock-row:active{background:#f2f2f7}
+.stock-top{display:flex;align-items:baseline;width:100%;gap:6px}
+.stock-rank{font-size:13px;font-weight:700;color:#d63031;text-align:left;line-height:1.3;min-width:32px;flex-shrink:0}
+.stock-name{font-size:13px;font-weight:600;color:#1d1d1f;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;line-height:1.3;padding:0 2px}
+.stock-chg{text-align:right;font-weight:600;font-size:13px;min-width:54px;flex-shrink:0;font-variant-numeric:tabular-nums}
 .stock-chg.r{color:#d63031}
 .stock-chg.g{color:#00b894}
+.stock-sub{font-size:9px;color:#999;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px;padding-left:2px;line-height:1.2}
 /* Footer */
 .ft{color:#999;font-size:11px;text-align:center;padding:14px 16px;padding-bottom:calc(14px + var(--safe-b))}
 /* Detail Panel - Fixed bottom sheet on mobile */
@@ -134,16 +128,13 @@ var at={};ss.forEach(function(x){(x.rc||[]).forEach(function(t){at[t]=1})});
 var tags=Object.keys(at).sort().slice(0,5).join(' · ');
 h+='<div class="sector"><div class="sector-hd"><span>'+cn+'</span> <span class="badge">'+ss.length+'</span></div><ul class="stock-list">';
 ss.sort(function(a,b){return parseInt(a.o)-parseInt(b.o)}).forEach(function(x){var cp=x.p||0,cl=cp>0?'r':'g',sg=cp>0?'+':'';
-var bg='';if(cp>=9.8)bg='<span class="tag tag-zt">涨停</span>';else if(cp>=7)bg='<span class="tag tag-jzt">近涨停</span>';
-var pop=x.tg?'<span class="tag tag-pop">'+x.tg+'</span>':'';
 h+='<li class="stock-row" onclick="showDetail(\''+x.c+'\',this)">'+
+'<div class="stock-top">'+
 '<span class="stock-rank">#'+x.o+'</span>'+
-'<div class="stock-main">'+
 '<span class="stock-name">'+(x.n||"-")+'</span>'+
-'<span class="stock-sub"><span>'+(x.c||"-")+'</span>'+pop+bg+'</span>'+
-'</div>'+
-'<span class="stock-price">'+(x.q||0).toFixed(2)+'</span>'+
 '<span class="stock-chg '+cl+'">'+sg+cp.toFixed(2)+'%</span>'+
+'</div>'+
+'<span class="stock-sub">'+((x.rc||[]).filter(function(t){return ['同花顺指数','国家大基金持股','超级品牌','中国AI 50','同花顺漂亮100','证金持股','同花顺中特估100','同花顺果指数'].indexOf(t)<0})[0]||(x.cs||[])[0]||'')+'</span>'+
 '</li>'
 });
 h+='</ul></div>'
@@ -163,94 +154,62 @@ setTimeout(tick,1000);
 })();
 
 // ====== 实时行情刷新（新浪财经） ======
-function getEx(code){
-var f=code.charAt(0);
-if(f==='6')return'sh';
-if(f==='0'||f==='3')return'sz';
-return'sz';
-}
+// 只刷新涨跌幅，股价保持内嵌数据不动
+function getEx(c){return c.charAt(0)==='6'?'sh':'sz';}
 
-// 分批从新浪拉取实时数据
 function refreshQuotes(){
 var ss=DATA.s;
 if(!ss||!ss.length)return;
-var loaded=0,total=0;
-var bs=50;
-function checkDone(){
-loaded++;
-if(loaded<total)return;
-// 全部加载完成，解析数据
+var done=0,total=0;
+
+for(var s=0;s<ss.length;s+=50){
+total++;
+(function(start){
+var end=Math.min(start+50,ss.length);
+var list=[];
+for(var i=start;i<end;i++)list.push(getEx(ss[i].c)+ss[i].c);
+var scr=document.createElement('script');
+scr.src='https://hq.sinajs.cn/list='+list.join(',');
+scr.onload=scr.onerror=function(){
+done++;
+if(done<total)return;
+// 只更新涨跌幅，不改股价
+var updated=0;
 for(var i=0;i<ss.length;i++){
-var code=ss[i].c,ex=getEx(code);
-var v=window['hq_str_'+ex+code];
+var v=window['hq_str_'+getEx(ss[i].c)+ss[i].c];
 if(!v)continue;
 try{
 var p=v.split(',');
-var name=p[0],open=+p[1],yc=+p[2],now=+p[3],high=+p[4],low=+p[5],vol=+p[9];
-if(!now||isNaN(now))continue;
-var chg=now-yc,pct=chg/yc*100;
-ss[i].q=now;
-ss[i].p=+pct.toFixed(2);
+var now=+p[3],yc=+p[2];
+if(now&&!isNaN(now)&&yc){
+ss[i].p=+((now-yc)/yc*100).toFixed(2);
+updated++;
+}
 }catch(e){}
 }
-renderUI();
+if(!updated)return;
+// 只改涨跌幅列
+var chgAll=document.querySelectorAll('.stock-chg');
+for(var i=0;i<chgAll.length&&i<ss.length;i++){
+var x=ss[i];if(!x)continue;
+var chgEl=chgAll[i];
+var cp=x.p||0,sg=cp>0?'+':'';
+chgEl.textContent=sg+cp.toFixed(2)+'%';
+chgEl.className='stock-chg '+(cp>0?'r':cp<0?'g':'');
 }
-// 分批创建script标签
-for(var s=0;s<ss.length;s+=bs){
-total++;
-var e=Math.min(s+bs,ss.length);
-var list=[];
-for(var i=s;i<e;i++)list.push(getEx(ss[i].c)+ss[i].c);
-var scr=document.createElement('script');
-scr.src='https://hq.sinajs.cn/list='+list.join(',');
-scr.onload=checkDone;
-scr.onerror=checkDone;
-document.body.appendChild(scr);
-}
-// 5秒超时保护
-setTimeout(function(){if(loaded<total){loaded=total;checkDone();}},5000);
-}
-
-function renderUI(){
-var ss=DATA.s;
-if(!ss||!ss.length)return;
 // 更新统计
 var up=ss.filter(function(s){return s.p>0}).length;
 var dn=ss.filter(function(s){return s.p<0}).length;
 var zt=ss.filter(function(s){return s.p>=9.8}).length;
 var av=(ss.reduce(function(a,s){return a+s.p},0)/ss.length).toFixed(2);
-var g={};
-ss.forEach(function(x){(x.cs||['其他']).forEach(function(cn){if(!g[cn])g[cn]=[];g[cn].push(x)})});
-// 更新统计卡片
-var stats=document.querySelectorAll('.stat .n');
-if(stats.length>=2)stats[1].textContent=zt;
-if(stats.length>=3)stats[2].innerHTML=up+'/<span class="dn">'+dn+'</span>';
-if(stats.length>=5)stats[4].textContent=av+'%';
-// 更新每行股价
-var rows=document.querySelectorAll('.stock-row');
-rows.forEach(function(row,i){
-if(i>=ss.length)return;
-var x=ss[i];if(!x)return;
-var sp=row.querySelectorAll('span');
-if(sp.length<4)return;
-var pe=sp[2],ce=sp[3];
-if(pe)pe.textContent=x.q.toFixed(2);
-if(ce){
-var cp=x.p||0,sg=cp>0?'+':'';
-var cl=cp>0?'r':cp<0?'g':'';
-ce.textContent=sg+cp.toFixed(2)+'%';
-ce.className='stock-chg '+cl;
+var st=document.querySelectorAll('.stat .n');
+if(st.length>=2)st[1].textContent=zt;
+if(st.length>=3)st[2].innerHTML=up+'/<span class="dn">'+dn+'</span>';
+if(st.length>=5)st[4].textContent=av+'%';
+};
+document.body.appendChild(scr);
+})(s);
 }
-// 更新涨停标签
-var sub=row.querySelector('.stock-sub');
-if(!sub)return;
-var oldTag=sub.querySelector('.tag-zt')||sub.querySelector('.tag-jzt');
-if(oldTag)oldTag.remove();
-var nTag='';
-if(cp>=9.8)nTag='<span class="tag tag-zt">涨停</span>';
-else if(cp>=7)nTag='<span class="tag tag-jzt">近涨停</span>';
-if(nTag)sub.insertAdjacentHTML('beforeend',nTag);
-});
 }
 
 setTimeout(refreshQuotes, 500);
@@ -314,6 +273,8 @@ if(date&&date.indexOf('-')<0&&date.length===8)date=date.substring(0,4)+'-'+date.
 return{d:date,o:parseFloat(d[1]),c:parseFloat(d[2]),h:parseFloat(d[3]),l:parseFloat(d[4]),v:parseFloat(d[5])}
 });
 bars.sort(function(a,b){return a.d.localeCompare(b.d)});
+// 只保留最近5个月（约105个交易日）
+if(bars.length>105)bars=bars.slice(bars.length-105);
 var n=bars.length;
 var maxH=Math.max.apply(null,bars.map(function(b){return b.h}));
 var minL=Math.min.apply(null,bars.map(function(b){return b.l}));
