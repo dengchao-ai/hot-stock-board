@@ -13,8 +13,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: 安装依赖
-        run: pip install requests -q
       - name: 生成页面
         run: python3 generate.py
       - name: 提交并推送
