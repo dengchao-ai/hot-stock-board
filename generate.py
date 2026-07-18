@@ -97,13 +97,7 @@ data_json = json.dumps(data, ensure_ascii=False)
 
 # 把 DATA 嵌入 HTML（替换 var DATA = 后面的内容）
 import re
-new_html = re.sub(
-    r'var DATA = \{.*?\};',
-    'var DATA = ' + data_json + ';',
-    HTML_TEMPLATE,
-    count=1,
-    flags=re.DOTALL
-)
+new_html = HTML_TEMPLATE.replace('var DATA = STOCK_DATA;', 'var DATA = ' + data_json + ';')
 
 with open('index.html', 'w', encoding='utf-8') as f:
     f.write(new_html)
