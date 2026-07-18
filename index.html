@@ -87,10 +87,17 @@ async function main() {
     document.getElementById('app').innerHTML = '<div class="loading">正在获取热门排名...</div>';
     
     // 1. 用代理拉取同花顺数据
-    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(THS_API);
-    const r1 = await fetch(proxyUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-    if (!r1.ok) throw new Error('代理请求失败: ' + r1.status);
-    const raw = await r1.json();
+    const thsUrl = 'https://eq.10jqka.com.cn/open/api/hot_list/v1/hot_stock/a/hour/data.txt';
+    const proxies = [
+      'https://api.allorigins.win/raw?url=' + encodeURIComponent(thsUrl),
+      'https://corsproxy.io/?' + encodeURIComponent(thsUrl),
+      'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(thsUrl)
+    ];
+    let raw = null;
+    for (const p of proxies) {
+      try { const r = await fetch(p, { headers: { 'User-Agent': 'Mozilla/5.0' } }); if (r.ok) { raw = await r.json(); break; } } catch(e) { continue; }
+    }
+    if (!raw) throw new Error('数据获取失败，请刷新重试');
     const hotList = raw.data.stock_list.slice(0, 100);
     
     document.getElementById('app').innerHTML = '<div class="loading">正在获取实时行情...</div>';
