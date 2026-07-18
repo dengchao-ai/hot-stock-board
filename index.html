@@ -33,149 +33,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .stock-sub{font-size:9px;color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}
 .ft{color:#999;font-size:11px;text-align:center;padding:14px 16px;padding-bottom:calc(14px + var(--safe-b))}
 @media(min-width:600px){.container{max-width:680px;padding:16px}.stats{grid-template-columns:repeat(5,1fr)}}
-body{overscroll-behavior-y:contain}
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.sector{animation:fadeUp .4s ease both}
-.loading{text-align:center;padding:40px 20px;color:#999;font-size:14px}
 </style>
 </head>
 <body>
 <div class="header"><h1>热门前100</h1><div class="sub"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#4ade80"></span> 同花顺实时 · <span id="liveTime">--:--</span></div></div>
-<div class="container" id="app"><div class="loading">正在获取数据...</div></div>
+<div class="container" id="app"></div>
 <div class="ft">热门前100 · 同花顺实时数据</div>
 <script>
-
-function classify(name, concepts) {
-  const text = name + ' ' + (concepts || []).join(' ');
-  const rules = [
-    ['通信', ['通信','CPO','光纤','光模块','F5G','5G','6G','共封装光学']],
-    ['半导体', ['半导体','芯片','存储芯片','封装','集成电路','PCB','先进封装','中芯','晶圆','汽车芯片','功率半导体','MCU','FPGA']],
-    ['电力', ['电力','电网','特高压','绿色电力','虚拟电厂','超超临界','抽水蓄能','核电','风电','光热','智能电网','发电']],
-    ['新能源', ['光伏','储能','碳交易','页岩气','氢能源','太阳能','新能源','盐湖提锂','钠离子','固态电池','锂电','电池','能源']],
-    ['医药', ['医药','医疗','生物','CRO','流感','创新药','仿制药','血氧仪','医疗器械']],
-    ['人工智能', ['人工智能','算力','大模型','机器人','AI','东数西算']],
-    ['消费电子', ['消费电子','果指数','无线耳机','智能穿戴','电子纸','MicroLED','光学光电子','VR','AR','面板']],
-    ['新能源汽车', ['新能源汽车','充电桩','新能源车','动力电池','整车','汽车零部件','无人驾驶','汽车']],
-    ['地产', ['房地产','物业','房产','城中村','新型城镇化','房屋检测']],
-    ['化工', ['化工','化肥','煤化工','氟化工','磷化工','新材料','有机硅']],
-    ['金融', ['金融','银行','证券','保险','券商']],
-    ['消费', ['消费','食品','饮料','白酒','免税','旅游','农业','猪肉','种植','纺织','服装','家电']],
-    ['数字经济', ['数字经济','NFT','Web3','区块链','元宇宙','数据确权','数据要素','数字货币']],
-    ['军工', ['军工','航天','航空','国防','航母','卫星','导航','国产航母']],
-    ['传媒', ['传媒','游戏','电竞','影视','广告','互联网','云游戏']],
-    ['基建', ['基建','建筑','工程','装配式','建筑节能','水利','路桥','建材']],
-    ['机械设备', ['机械','设备','高端装备','工业母机','机床','工程机械']],
-    ['有色/钢铁', ['有色','钢铁','黄金','铜','铝','矿','金属','稀土','小金属']],
-    ['环保', ['环保','碳中和','净水','污水处理']],
-    ['物流运输', ['物流','航运','港口','运输','快递']],
-    ['教育', ['教育','培训']],
-  ];
-  for (const [cat, kws] of rules) {
-    for (const kw of kws) {
-      if (text.includes(kw)) return cat;
-    }
-  }
-  return '';
-}
-
-const FILTER = ['同花顺指数','国家大基金持股','超级品牌','中国AI 50','同花顺漂亮100','证金持股','同花顺中特估100','同花顺果指数','国企改革','新股与次新股','高股息精选','注册制次新股','同花顺人工智能','含H股的H股','央企国企改革','MSCI概念','富时罗素概念股','标普道琼斯A股','2026一季报预增','同花顺出海50'];
-
-
-
-async function main() {
-  try {
-    document.getElementById('app').innerHTML = '<div class="loading">正在获取热门排名...</div>';
-    
-    // 1. 用代理拉取同花顺数据
-    const thsUrl = 'https://eq.10jqka.com.cn/open/api/hot_list/v1/hot_stock/a/hour/data.txt';
-    const proxies = [
-      'https://api.allorigins.win/raw?url=' + encodeURIComponent(thsUrl),
-      'https://corsproxy.io/?' + encodeURIComponent(thsUrl),
-      'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(thsUrl)
-    ];
-    let raw = null;
-    for (const p of proxies) {
-      try { const r = await fetch(p, { headers: { 'User-Agent': 'Mozilla/5.0' } }); if (r.ok) { raw = await r.json(); break; } } catch(e) { continue; }
-    }
-    if (!raw) throw new Error('数据获取失败，请刷新重试');
-    const hotList = raw.data.stock_list.slice(0, 100);
-    
-    document.getElementById('app').innerHTML = '<div class="loading">正在获取实时行情...</div>';
-    
-    // 2. 腾讯行情（无跨域问题）
-    const codes = hotList.map(s => (s.code.startsWith('6') ? 'sh' : 'sz') + s.code);
-    const prices = {};
-    for (let i = 0; i < codes.length; i += 50) {
-      const batch = codes.slice(i, i + 50);
-      try {
-        const r = await fetch('https://qt.gtimg.cn/q=' + batch.join(','), { headers: { 'User-Agent': 'Mozilla/5.0' } });
-        const text = await r.text();
-        text.split(';').forEach(line => {
-          line = line.trim();
-          if (!line || !line.includes('="')) return;
-          const vn = line.split('=')[0].trim();
-          const vals = line.split('="')[1].replace(/;$/, '').split('~');
-          if (vals.length < 33) return;
-          prices[vn] = { q: parseFloat(vals[3]) || 0, p: parseFloat(vals[32]) || 0 };
-        });
-      } catch(e) {}
-    }
-    
-    // 3. Build stock data
-    const stocks = hotList.map((s, i) => {
-      const code = s.code;
-      const tag = s.tag || {};
-      const concepts = tag.concept_tag || [];
-      const vn = (code.startsWith('6') ? 'v_sh' : 'v_sz') + code;
-      const p = prices[vn] || { q: 0, p: 0 };
-      return { c: code, n: s.name, o: i + 1, q: p.q, p: p.p, cs: [classify(s.name, concepts)], rc: concepts, kl: [] };
-    });
-    
-    // 4. Render
-    const now = new Date();
-    document.getElementById('liveTime').textContent = 
-      String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
-    
-    render(stocks);
-  } catch(e) {
-    document.getElementById('app').innerHTML = '<div class="loading">数据获取失败: ' + e.message + '</div>';
-  }
-}
-
-function render(s) {
-  const up = s.filter(x => x.p > 0).length;
-  const dn = s.filter(x => x.p < 0).length;
-  const zt = s.filter(x => x.p >= 9.8).length;
-  const av = (s.reduce((a,x) => a + x.p, 0) / s.length).toFixed(2);
-  const g = {};
-  s.forEach(x => { const cn = (x.cs||[''])[0]; if (cn) { if (!g[cn]) g[cn] = []; g[cn].push(x); } });
-  const e = Object.entries(g).sort((a,b) => b[1].length - a[1].length);
-  let h = '<div class="stats"><div class="stat"><div class="n">'+s.length+'</div><div class="l">热门股票</div></div><div class="stat"><div class="n up">'+zt+'</div><div class="l">涨停</div></div><div class="stat"><div class="n up">'+up+'/<span class="dn">'+dn+'</span></div><div class="l">涨/跌</div></div><div class="stat"><div class="n">'+Object.keys(g).length+'</div><div class="l">行业大类</div></div><div class="stat"><div class="n '+(av>=0?'up':'dn')+'">'+av+'%</div><div class="l">平均涨幅</div></div></div>';
-  e.forEach(([cn, ss]) => {
-    h += '<div class="sector"><div class="sector-hd"><span>'+cn+'</span><span class="badge">'+ss.length+'只</span></div><ul class="stock-list">';
-    ss.sort((a,b) => a.o - b.o).forEach(x => {
-      const cp = x.p || 0, cl = cp > 0 ? 'r' : 'g', sg = cp > 0 ? '+' : '';
-      const sub = (x.rc||[]).filter(t => !FILTER.includes(t))[0] || x.cs[0] || '';
-      h += '<li class="stock-row" onclick="showDetail(\''+x.c+'\')"><div class="stock-top"><span class="stock-rank">#'+x.o+'</span><span class="stock-name">'+(x.n||'-')+'</span><span class="stock-chg '+cl+'">'+sg+cp.toFixed(2)+'%</span></div><span class="stock-sub">'+sub+'</span></li>';
-    });
-    h += '</ul></div>';
-  });
-  document.getElementById('app').innerHTML = h;
-  window._stocks = s;
-}
-
-function showDetail(code) {
-  const s = window._stocks.find(x => x.c === code); if (!s) return;
-  let p = document.getElementById('detail');
-  if (!p) { p = document.createElement('div'); p.id = 'detail'; p.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:999;background:#fff;overflow-y:auto'; document.body.appendChild(p); }
-  p.style.display = 'block';
-  const cc = s.p >= 0 ? '#ff6b6b' : '#27ae60', sg = s.p >= 0 ? '+' : '';
-  const sub = (s.rc||[]).filter(t => !FILTER.includes(t)).slice(0,3).join(' · ') || '--';
-  p.innerHTML = '<div style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,10px))"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:20px;font-weight:700">'+(s.n||'-')+'</span><span style="font-size:13px;opacity:.6">'+(s.c||'')+'</span><div onclick="closeDetail()" style="margin-left:auto;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer">✕</div></div><div style="display:flex;align-items:baseline;gap:12px"><span style="font-size:32px;font-weight:700">'+(s.q||'--')+'</span><span style="font-size:18px;font-weight:600;color:'+cc+'">'+sg+(s.p||0).toFixed(2)+'%</span></div><div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><span style="background:rgba(255,255,255,.1);padding:4px 12px;border-radius:8px;font-size:12px">热度: <b>#'+s.o+'</b></span><span style="background:rgba(255,255,255,.1);padding:4px 12px;border-radius:8px;font-size:12px">概念: <b>'+sub+'</b></span></div></div><div style="padding:16px;color:#999;text-align:center;font-size:14px">日K线图加载中...</div>';
-}
-function closeDetail() { const el = document.getElementById('detail'); if (el) el.style.display = 'none'; }
-
-main();
+var DATA = STOCK_DATA;
+(function(s){
+if(!s||!s.length){document.getElementById('app').innerHTML='暂无数据';return}
+var n=new Date();document.getElementById('liveTime').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+var up=s.filter(function(x){return x.p>0}).length,dn=s.filter(function(x){return x.p<0}).length,zt=s.filter(function(x){return x.p>=9.8}).length,av=(s.reduce(function(a,x){return a+x.p},0)/s.length).toFixed(2);
+var g={};s.forEach(function(x){var cn=(x.cs||[''])[0];if(cn){if(!g[cn])g[cn]=[];g[cn].push(x)}});
+var e=Object.entries(g).sort(function(a,b){return b[1].length-a[1].length});
+var h='<div class="stats"><div class="stat"><div class="n">'+s.length+'</div><div class="l">热门股票</div></div><div class="stat"><div class="n up">'+zt+'</div><div class="l">涨停</div></div><div class="stat"><div class="n up">'+up+'/<span class="dn">'+dn+'</span></div><div class="l">涨/跌</div></div><div class="stat"><div class="n">'+Object.keys(g).length+'</div><div class="l">行业大类</div></div><div class="stat"><div class="n '+(av>=0?'up':'dn')+'">'+av+'%</div><div class="l">平均涨幅</div></div></div>';
+e.forEach(function(p){var cn=p[0],ss=p[1];
+h+='<div class="sector"><div class="sector-hd"><span>'+cn+'</span><span class="badge">'+ss.length+'只</span></div><ul class="stock-list">';
+ss.sort(function(a,b){return a.o-b.o}).forEach(function(x){var cp=x.p||0,cl=cp>0?'r':'g',sg=cp>0?'+':'';h+='<li class="stock-row" onclick="showDetail(\''+x.c+'\')"><div class="stock-top"><span class="stock-rank">#'+x.o+'</span><span class="stock-name">'+(x.n||'-')+'</span><span class="stock-chg '+cl+'">'+sg+cp.toFixed(2)+'%</span></div><span class="stock-sub">'+((x.rc||[])[0]||x.cs[0]||'')+'</span></li>'});
+h+='</ul></div>'});
+document.getElementById('app').innerHTML=h;
+})(DATA.s);
+function showDetail(code){var s=DATA.s.find(function(x){return x.c===code});if(!s)return;var p=document.getElementById('detail');if(!p){p=document.createElement('div');p.id='detail';p.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;z-index:999;background:#fff;overflow-y:auto';document.body.appendChild(p)}p.style.display='block';var cc=s.p>=0?'#ff6b6b':'#27ae60',sg=s.p>=0?'+':'';p.innerHTML='<div style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,10px))"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:20px;font-weight:700">'+(s.n||'-')+'</span><span style="font-size:13px;opacity:.6">'+(s.c||'')+'</span><div onclick="closeDetail()" style="margin-left:auto;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer">✕</div></div><div style="display:flex;align-items:baseline;gap:12px"><span style="font-size:32px;font-weight:700">'+(s.q||'--')+'</span><span style="font-size:18px;font-weight:600;color:'+cc+'">'+sg+(s.p||0).toFixed(2)+'%</span></div><div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><span style="background:rgba(255,255,255,.1);padding:4px 12px;border-radius:8px;font-size:12px">热度: <b>#'+s.o+'</b></span><span style="background:rgba(255,255,255,.1);padding:4px 12px;border-radius:8px;font-size:12px">概念: <b>'+((s.rc||[]).slice(0,3).join(' · ')||'--')+'</b></span></div></div><div style="padding:10px;text-align:center;color:#999;font-size:13px;padding-top:40px">K线数据加载中...</div>'}
+function closeDetail(){var el=document.getElementById('detail');if(el)el.style.display='none'}
 </script>
 </body>
 </html>
