@@ -97,7 +97,7 @@ body{overscroll-behavior-y:contain}
     <button id="kline_close" style="width:28px;height:28px;border-radius:14px;background:rgba(255,255,255,.15);color:#fff;border:none;font-size:16px;cursor:pointer;flex-shrink:0">✕</button>
   </div>
   <div style="flex:1;min-height:0;position:relative">
-    <canvas id="canvas_kline" style="width:100%;height:100%;display:block"></canvas>
+    <canvas id="canvas_kline" style="display:block"></canvas>
   </div>
 </div>
 
@@ -244,7 +244,7 @@ var pw=par.clientWidth;
 var ph=par.clientHeight;
 var dpr=window.devicePixelRatio||1;
 var W=Math.round(pw);
-var H=Math.round(Math.min(W*0.55,ph*0.85));
+var H=Math.round(W*0.75);
 c.width=W*dpr;c.height=H*dpr;
 c.style.width=W+'px';c.style.height=H+'px';
 var ctx=c.getContext('2d');ctx.scale(dpr,dpr);
