@@ -161,7 +161,7 @@ h+='<div class="sector"><div class="sector-hd">📌 '+cn+' <span class="badge">'
 ss.sort(function(a,b){{return parseInt(a.o)-parseInt(b.o)}}).forEach(function(x){{var cp=x.p||0,cl=cp>0?'r':cp<0?'g':'',sg=cp>0?'+':'';
 var bg='';if(cp>=9.8)bg='<span class="ztg zt">涨停</span>';else if(cp>=7)bg='<span class="ztg jzt">近涨停</span>';
 var pop=x.tg?'<span class="pop">'+x.tg+'</span>':'';
-h+='<tr><td style="font-weight:600;color:#d63031">#'+x.o+'</td><td class="cm">'+(x.n||"-")+pop+'</td><td class="ca">'+(x.c||"-")+'</td><td>'+(x.q||0).toFixed(2)+'</td><td class="'+cl+'">'+sg+cp.toFixed(2)+'%</td><td>'+bg+'</td></tr>'}});
+h+='<tr><td style="font-weight:600;color:#d63031">#'+x.o+'</td><td class="cm"><a href="https://stockpage.10jqka.com.cn/'+(x.c||'')+'/" target="_blank" style="color:inherit;text-decoration:none">'+(x.n||"-")+'</a>'+pop+'</td><td class="ca">'+(x.c||"-")+'</td><td>'+(x.q||0).toFixed(2)+'</td><td class="'+cl+'">'+sg+cp.toFixed(2)+'%</td><td>'+bg+'</td></tr>'}});
 h+='</tbody></table></div>'}});
 document.getElementById('app').innerHTML=h;
 }})(DATA.s);
