@@ -1,7 +1,7 @@
 name: 更新热榜数据
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '0 */2 * * *'
   workflow_dispatch:
 permissions:
   contents: write
@@ -11,15 +11,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: { python-version: '3.11' }
+        with:
+          python-version: '3.12'
+      - name: 安装依赖
+        run: pip install requests -q
       - name: 生成页面
         run: python3 generate.py
       - name: 提交并推送
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
           git add index.html
           git diff --cached --quiet && echo "无变化" || {
+            git config user.name "bot"
+            git config user.email "bot@users.noreply.github.com"
             git commit -m "auto update $(date '+%Y-%m-%d %H:%M' UTC)"
             git push
           }
