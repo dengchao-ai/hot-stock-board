@@ -87,6 +87,33 @@ def fetch_data():
             'rc': concepts, 'kl': []
         })
     
+    # 获取前30只股票的日K线数据
+    for s in stocks[:30]:
+        try:
+            code = s['c']
+            market = 'sh' if code.startswith('6') else 'sz'
+            url = 'https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=' + market + code + ',day,,,168'
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            resp = urllib.request.urlopen(req, timeout=8, context=ctx)
+            raw = json.loads(resp.read().decode('utf-8', 'ignore'))
+            kdata = raw.get('data', {}).get(market + code, {})
+            lines = kdata.get('day') or kdata.get('qfqday') or []
+            if lines:
+                kl = []
+                for line in lines:
+                    if isinstance(line, str):
+                        parts = line.split(' ')
+                        if len(parts) == 2:
+                            vals = parts[1].split(',')
+                            if len(vals) >= 6:
+                                kl.append([parts[0], float(vals[0]), float(vals[2]), float(vals[1]), float(vals[3]), float(vals[5])])
+                    elif isinstance(line, list) and len(line) >= 6:
+                        kl.append(line)
+                if kl:
+                    s['kl'] = kl
+        except:
+            pass
+    
     now = datetime.now()
     return {'s': stocks, 'ut': now.strftime('%H:%M:%S'), 'dt': now.strftime('%Y-%m-%d')}
 
