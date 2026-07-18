@@ -44,8 +44,6 @@ body{overscroll-behavior-y:contain}
 <div class="container" id="app"><div class="loading">正在获取数据...</div></div>
 <div class="ft">热门前100 · 同花顺实时数据</div>
 <script>
-const THS_API = 'https://eq.10jqka.com.cn/open/api/hot_list/v1/hot_stock/a/hour/data.txt';
-const PRICE_API = 'https://qt.gtimg.cn/q=';
 
 function classify(name, concepts) {
   const text = name + ' ' + (concepts || []).join(' ');
@@ -82,39 +80,38 @@ function classify(name, concepts) {
 
 const FILTER = ['同花顺指数','国家大基金持股','超级品牌','中国AI 50','同花顺漂亮100','证金持股','同花顺中特估100','同花顺果指数','国企改革','新股与次新股','高股息精选','注册制次新股','同花顺人工智能','含H股的H股','央企国企改革','MSCI概念','富时罗素概念股','标普道琼斯A股','2026一季报预增','同花顺出海50'];
 
-async function fetchWithFallback(url, options) {
-  try {
-    const r = await fetch(url, { ...options, mode: 'cors' });
-    if (r.ok) return r;
-  } catch(e) {}
-  // CORS proxy fallback
-  const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
-  return fetch(proxy, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-}
+
 
 async function main() {
   try {
-    // 1. Fetch 同花顺 hot list
-    let resp = await fetchWithFallback(THS_API, { headers: { 'User-Agent': 'Mozilla/5.0', 'Referer': 'https://10jqka.com.cn' } });
-    if (!resp.ok) throw new Error('同花顺API: ' + resp.status);
-    const raw = await resp.json();
+    document.getElementById('app').innerHTML = '<div class="loading">正在获取热门排名...</div>';
+    
+    // 1. 用代理拉取同花顺数据
+    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(THS_API);
+    const r1 = await fetch(proxyUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    if (!r1.ok) throw new Error('代理请求失败: ' + r1.status);
+    const raw = await r1.json();
     const hotList = raw.data.stock_list.slice(0, 100);
     
-    // 2. Fetch prices
+    document.getElementById('app').innerHTML = '<div class="loading">正在获取实时行情...</div>';
+    
+    // 2. 腾讯行情（无跨域问题）
     const codes = hotList.map(s => (s.code.startsWith('6') ? 'sh' : 'sz') + s.code);
     const prices = {};
     for (let i = 0; i < codes.length; i += 50) {
       const batch = codes.slice(i, i + 50);
-      const presp = await fetchWithFallback(PRICE_API + batch.join(','), { headers: { 'User-Agent': 'Mozilla/5.0' } });
-      const text = await presp.text();
-      text.split(';').forEach(line => {
-        line = line.trim();
-        if (!line || !line.includes('="')) return;
-        const vn = line.split('=')[0].trim();
-        const vals = line.split('="')[1].replace(/;$/, '').split('~');
-        if (vals.length < 33) return;
-        prices[vn] = { q: parseFloat(vals[3]) || 0, p: parseFloat(vals[32]) || 0 };
-      });
+      try {
+        const r = await fetch('https://qt.gtimg.cn/q=' + batch.join(','), { headers: { 'User-Agent': 'Mozilla/5.0' } });
+        const text = await r.text();
+        text.split(';').forEach(line => {
+          line = line.trim();
+          if (!line || !line.includes('="')) return;
+          const vn = line.split('=')[0].trim();
+          const vals = line.split('="')[1].replace(/;$/, '').split('~');
+          if (vals.length < 33) return;
+          prices[vn] = { q: parseFloat(vals[3]) || 0, p: parseFloat(vals[32]) || 0 };
+        });
+      } catch(e) {}
     }
     
     // 3. Build stock data
