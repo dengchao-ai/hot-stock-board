@@ -244,7 +244,7 @@ var pw=par.clientWidth;
 var ph=par.clientHeight;
 var dpr=window.devicePixelRatio||1;
 var W=Math.round(pw);
-var H=Math.round(ph);
+var H=Math.round(Math.min(W*0.55,ph*0.85));
 c.width=W*dpr;c.height=H*dpr;
 c.style.width=W+'px';c.style.height=H+'px';
 var ctx=c.getContext('2d');ctx.scale(dpr,dpr);
